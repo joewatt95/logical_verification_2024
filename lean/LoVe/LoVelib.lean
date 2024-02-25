@@ -8,6 +8,9 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
+-- Import this last so that #find from loogle shadows that of mathlib.
+import Loogle.Find
+
 
 /- # LoVelib: Logical Verification Library -/
 
