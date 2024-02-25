@@ -29,22 +29,20 @@ def I : α → α :=
   fun a ↦ a
 
 def K : α → β → α :=
-  fun a b ↦ a
+  fun a _b ↦ a
 
-def C : (α → β → γ) → β → α → γ :=
-  sorry
+def C : (α → β → γ) → β → α → γ := flip
 
-def projFst : α → α → α :=
-  sorry
+def projFst : α → α → α
+  | a, _ => a
 
 /- Give a different answer than for `projFst`. -/
 
-def projSnd : α → α → α :=
-  sorry
+def projSnd : α → α → α
+  | _, a => a
 
-def someNonsense : (α → β → γ) → α → (α → γ) → β → γ :=
-  sorry
-
+def someNonsense : (α → β → γ) → α → (α → γ) → β → γ
+  | _, a, f, _ => f a
 
 /- ## Question 2: Typing Derivation
 

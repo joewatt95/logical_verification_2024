@@ -37,17 +37,21 @@ Hitchhiker's Guide. As explained there, you can use `_` as a placeholder while
 constructing a term. By hovering over `_`, you will see the current logical
 context. -/
 
-def B : (α → β) → (γ → α) → γ → β :=
-  sorry
+def B : (α → β) → (γ → α) → γ → β := (. ∘ .)
 
-def S : (α → β → γ) → (α → β) → α → γ :=
-  sorry
+def S : (α → β → γ) → (α → β) → α → γ
+  | f_a_b_c, f_a_b, a =>
+    have : β := f_a_b a
+    show γ from f_a_b_c a this
 
-def moreNonsense : ((α → β) → γ → δ) → γ → β → δ :=
-  sorry
+def moreNonsense : ((α → β) → γ → δ) → γ → β → δ
+  | f, c, b =>
+    have : α → β
+      | _ => b
+    show δ from f this c
 
-def evenMoreNonsense : (α → β) → (α → γ) → α → β → γ :=
-  sorry
+def evenMoreNonsense : (α → β) → (α → γ) → α → β → γ
+  | _, f_a_c, a, _ => f_a_c a
 
 /- 1.2 (2 points). Complete the following definition.
 
@@ -56,8 +60,15 @@ follow the procedure described in the Hitchhiker's Guide.
 
 Note: Peirce is pronounced like the English word "purse". -/
 
-def weakPeirce : ((((α → β) → α) → α) → β) → β :=
-  sorry
+def weakPeirce : ((((α → β) → α) → α) → β) → β
+  | h =>
+    suffices ((α → β) → α) → α from h this
+    assume h' : (α → β) → α;
+      suffices α → β from h' this
+      assume h_a : α;
+        have : ((α → β) → α) → α
+          | _ => h_a
+        show β from h this
 
 /- ## Question 2 (4 points): Typing Derivation
 
