@@ -28,4 +28,4 @@ require Duper from git
 
 require loogle from git
   "https://github.com/nomeata/loogle"
-    @ "b266dac0429b598e76979b20441c4ddc737fe894"
+    @ "f1f010fe08ba2b83cf68215e0aac94807de69460"
