@@ -61,7 +61,7 @@ follow the procedure described in the Hitchhiker's Guide.
 Note: Peirce is pronounced like the English word "purse". -/
 
 def weakPeirce : ((((α → β) → α) → α) → β) → β
-  | h =>
+  | (h : (((α → β) → α) → α) → β) =>
     suffices ((α → β) → α) → α from h this
     assume h' : (α → β) → α;
       suffices α → β from h' this
