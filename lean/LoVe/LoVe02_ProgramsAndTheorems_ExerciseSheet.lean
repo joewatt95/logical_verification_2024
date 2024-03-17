@@ -74,16 +74,16 @@ that it also simplifies expressions involving the other three binary
 operators. -/
 
 def simplify : AExp → AExp
-  | AExp.add (AExp.num 0) e₂ => simplify e₂
-  | AExp.add e₁ (AExp.num 0) => simplify e₁
+  | .add (AExp.num 0) e₂ => simplify e₂
+  | .add e₁ (AExp.num 0) => simplify e₁
   -- insert the missing cases here
   -- catch-all cases below
-  | AExp.num i               => AExp.num i
-  | AExp.var x               => AExp.var x
-  | AExp.add e₁ e₂           => AExp.add (simplify e₁) (simplify e₂)
-  | AExp.sub e₁ e₂           => AExp.sub (simplify e₁) (simplify e₂)
-  | AExp.mul e₁ e₂           => AExp.mul (simplify e₁) (simplify e₂)
-  | AExp.div e₁ e₂           => AExp.div (simplify e₁) (simplify e₂)
+  | .num i               => .num i
+  | .var x               => .var x
+  | .add e₁ e₂           => .add (simplify e₁) (simplify e₂)
+  | .sub e₁ e₂           => .sub (simplify e₁) (simplify e₂)
+  | .mul e₁ e₂           => .mul (simplify e₁) (simplify e₂)
+  | .div e₁ e₂           => .div (simplify e₁) (simplify e₂)
 
 /- 2.3. Is the `simplify` function correct? In fact, what would it mean for it
 to be correct or not? Intuitively, for `simplify` to be correct, it must
@@ -108,13 +108,13 @@ def map {α : Type} {β : Type} (f : α → β) : List α → List β
   | [] => []
   | x :: xs => f x :: map f xs
 
-#eval map (fun n ↦ n + 10) [1, 2, 3]   -- expected: [11, 12, 13]
+#eval map (λ n ↦ n + 10) [1, 2, 3]   -- expected: [11, 12, 13]
 
 /- 3.2 (**optional**). State (without proving them) the so-called functorial
 properties of `map` as theorems. Schematically:
 
-     map (fun x ↦ x) xs = xs
-     map (fun x ↦ g (f x)) xs = map g (map f xs)
+     map (λ x ↦ x) xs = xs
+     map (λ x ↦ g (f x)) xs = map g (map f xs)
 
 Try to give meaningful names to your theorems. Also, make sure to state the
 second property as generally as possible, for arbitrary types. -/

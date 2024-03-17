@@ -23,8 +23,10 @@ namespace LoVe
 end of a list. Your function should be defined by recursion and not using `++`
 (`List.append`). -/
 
-def snoc {α : Type} : List α → α → List α :=
-  sorry
+@[simp]
+def snoc {α : Type} : List α → α → List α
+  | [], a => [a]
+  | x :: xs, a => x :: snoc xs a
 
 /- 1.2 (1 point). Convince yourself that your definition of `snoc` works by
 testing it on a few examples. -/
@@ -32,14 +34,20 @@ testing it on a few examples. -/
 #eval snoc [1] 2
 -- invoke `#eval` or `#reduce` here
 
+theorem snoc_eq_append {α : Type} {a : α} :
+  ∀ {xs : List α}, snoc xs a = xs ++ [a]
+  | [] | x :: xs => by simp [snoc_eq_append]
 
 /- ## Question 2 (6 points): Sum
 
 2.1 (3 points). Define a `sum` function that computes the sum of all the numbers
 in a list. -/
 
-def sum : List ℕ → ℕ :=
-  sorry
+@[simp]
+def sum : List ℕ → ℕ
+  | [] => 0
+  | x :: xs => x + sum xs
+  -- | xs => xs.foldl (. + .) 0
 
 #eval sum [1, 12, 3]   -- expected: 16
 
@@ -52,6 +60,21 @@ def sum : List ℕ → ℕ :=
 
 Try to give meaningful names to your theorems. Use `sorry` as the proof. -/
 
--- enter your theorem statements here
+theorem sum_snoc_eq_sum {n} : ∀ {ms}, sum (snoc ms n) = n + sum ms
+  | [] => by simp
+  | x :: xs => by simp [sum_snoc_eq_sum]; omega
+
+theorem sum_concat_eq_sums :
+  ∀ {ms ns}, sum (ms ++ ns) = sum ms + sum ns
+  | [], _ | _, [] => by simp
+  | m :: ms, n :: ns => by simp [sum_concat_eq_sums]; omega
+
+theorem sum_reverse_eq_sum : ∀ {ns}, sum (reverse ns) = sum ns
+  | [] => by simp
+  | n :: ns =>
+    calc sum (reverse <| n :: ns)
+       = sum (reverse ns ++ [n]) := by rw [reverse]
+     _ = sum ns + sum [n] := by rw [sum_concat_eq_sums, sum_reverse_eq_sum]
+     _ = sum (n :: ns) := by simp; omega
 
 end LoVe

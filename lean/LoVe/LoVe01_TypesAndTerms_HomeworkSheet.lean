@@ -63,9 +63,9 @@ Note: Peirce is pronounced like the English word "purse". -/
 def weakPeirce : ((((α → β) → α) → α) → β) → β
   | (h : (((α → β) → α) → α) → β) =>
     suffices ((α → β) → α) → α from h this
-    assume h' : (α → β) → α;
+    assume h' : (α → β) → α
       suffices α → β from h' this
-      assume h_a : α;
+      assume h_a : α
         have : ((α → β) → α) → α
           | _ => h_a
         show β from h this

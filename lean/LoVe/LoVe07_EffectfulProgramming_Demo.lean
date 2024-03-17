@@ -260,21 +260,18 @@ def id.pure {α : Type} : α → id α
 def id.bind {α β : Type} : id α → (α → id β) → id β
   | a, f => f a
 
-instance id.LawfulMonad : LawfulMonad id :=
-  { pure       := id.pure
-    bind       := id.bind
-    pure_bind  :=
-      by
-        intro α β a f
-        rfl
-    bind_pure  :=
-      by
-        intro α ma
-        rfl
-    bind_assoc :=
-      by
-        intro α β γ f g ma
-        rfl }
+instance id.LawfulMonad : LawfulMonad id where
+  pure       := id.pure
+  bind       := id.bind
+  pure_bind  := by
+    intro α β a f
+    rfl
+  bind_pure  := by
+    intro α ma
+    rfl
+  bind_assoc := by
+    intro α β γ f g ma
+    rfl
 
 
 /- ## Basic Exceptions
@@ -365,7 +362,7 @@ instance Action.LawfulMonad {σ : Type} :
 
 def increasingly : List ℕ → Action ℕ (List ℕ)
   | []        => pure []
-  | (n :: ns) =>
+  | n :: ns =>
     do
       let prev ← Action.read
       if n < prev then

@@ -104,16 +104,16 @@ def add : ℕ → ℕ → ℕ
 #reduce add 2 7
 
 def mul : ℕ → ℕ → ℕ
-  | _, Nat.zero   => Nat.zero
-  | m, Nat.succ n => add m (mul m n)
+  | _, .zero   => .zero
+  | m, .succ n => add m <| mul m n
 
 #eval mul 2 7
 
 #print mul
 
 def power : ℕ → ℕ → ℕ
-  | _, Nat.zero   => 1
-  | m, Nat.succ n => mul m (power m n)
+  | _, .zero   => 1
+  | m, .succ n => mul m <| power m n
 
 #eval power 2 5
 
@@ -130,8 +130,8 @@ def powerParam (m : ℕ) : ℕ → ℕ
 #eval powerParam 2 5
 
 def iter (α : Type) (z : α) (f : α → α) : ℕ → α
-  | Nat.zero   => z
-  | Nat.succ n => f (iter α z f n)
+  | .zero   => z
+  | .succ n => f <| iter α z f n
 
 #check iter
 
@@ -141,8 +141,8 @@ def powerIter (m n : ℕ) : ℕ :=
 #eval powerIter 2 5
 
 def append (α : Type) : List α → List α → List α
-  | List.nil,       ys => ys
-  | List.cons x xs, ys => List.cons x (append α xs ys)
+  | .nil,       ys => ys
+  | .cons x xs, ys => .cons x (append α xs ys)
 
 /- Because `append` must work for any type of list, the type of its elements is
 provided as an argument. As a result, the type must be provided in every call
@@ -156,8 +156,8 @@ provided as an argument. As a result, the type must be provided in every call
 and need not be provided in every call (provided Lean can infer it). -/
 
 def appendImplicit {α : Type} : List α → List α → List α
-  | List.nil,       ys => ys
-  | List.cons x xs, ys => List.cons x (appendImplicit xs ys)
+  | .nil,       ys => ys
+  | .cons x xs, ys => .cons x <| appendImplicit xs ys
 
 #eval appendImplicit [3, 1] [4, 1, 5]
 
@@ -192,7 +192,7 @@ def eval (env : String → ℤ) : AExp → ℤ
   | AExp.mul e₁ e₂ => eval env e₁ * eval env e₂
   | AExp.div e₁ e₂ => eval env e₁ / eval env e₂
 
-#eval eval (fun x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
+#eval eval (λ x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
 
 /- Lean only accepts the function definitions for which it can prove
 termination. In particular, it accepts __structurally recursive__ functions,

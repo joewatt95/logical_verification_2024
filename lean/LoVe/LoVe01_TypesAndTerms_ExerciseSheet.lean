@@ -26,10 +26,10 @@ while constructing a term. By hovering over `_`, you will see the current
 logical context. -/
 
 def I : α → α :=
-  fun a ↦ a
+  λ a ↦ a
 
 def K : α → β → α :=
-  fun a _b ↦ a
+  λ a _b ↦ a
 
 def C : (α → β → γ) → β → α → γ := flip
 
