@@ -208,15 +208,15 @@ namespace SorryTheorems
 
 attribute [simp] add
 
-example {n} : add n 0 = n := by simp only [add]
+example {n} : add n .zero = n := by simp only [add]
 
 @[simp]
 lemma zero_add : ∀ {n}, add 0 n = n
-  | 0 => by simp only [add]
+  | .zero => by simp only [add]
   | .succ n => by simp only [add, zero_add]
 
 theorem add_comm : ∀ {m n}, add m n = add n m
-  | 0, _ | _, 0 => by simp only [zero_add, add]
+  | .zero, _ | _, .zero => by simp only [zero_add, add]
   | .succ m, .succ n =>
     have h₀ : add m n = add n m := add_comm
     have h₁ : add (.succ m) n = add n (.succ m) := add_comm
@@ -233,7 +233,7 @@ theorem add_comm : ∀ {m n}, add m n = add n m
 
 theorem add_assoc {l m} :
   ∀ {n}, add (add l m) n = add l (add m n)
-  | 0 => by simp only [add]
+  | .zero => by simp only [add]
   | .succ n =>
     calc add (add l m) (.succ n)
      _ = .succ (add (add l m) n) := by simp only [add]
@@ -241,18 +241,21 @@ theorem add_assoc {l m} :
      _ = add l (add m (.succ n)) := by simp only [add]
 
 @[simp]
-lemma zero_mul : ∀ {n}, mul 0 n = 0
-  | 0 => by simp only [mul]
+lemma zero_mul : ∀ {n}, mul .zero n = .zero
+  | .zero => by simp only [mul]
   | .succ n => by simp only [mul, zero_mul, add]
 
-theorem mul_comm {m} :
-  ∀ {n}, mul m n = mul n m
-  | 0 => by simp [mul]
-  | .succ n =>
-    calc mul m (.succ n)
-     _ = add m (mul m n) := by simp only [mul]
-     _ = add (mul n m) m := by rw [mul_comm, add_comm]
-     _ = mul (.succ n) m := by sorry
+theorem mul_comm :
+  ∀ {m n}, mul m n = mul n m
+  | 0, _ | _, 0 => by simp only [zero_mul, mul]
+
+  | .succ m, .succ n =>
+    calc mul (.succ m) (.succ n)
+      _ = add (.succ m) (mul (.succ m) n) := by simp only [mul]
+      _ = add (.succ m) (mul n (.succ m)) := by simp only [mul_comm]
+      _ = add (.succ m) (add n (mul n m)) := by simp only [mul]
+      -- _ = add (.succ m) (add n (mul m n)) := by simp only [mul_comm]
+      _ = mul (.succ n) (.succ m) := by sorry
 
 theorem mul_assoc (l m n : ℕ) :
   mul (mul l m) n = mul l (mul m n) :=
