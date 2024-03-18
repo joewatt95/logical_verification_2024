@@ -112,15 +112,22 @@ value of `e` before. -/
 
 section SimplifyCorrect
 
-syntax "simplify_correct_recurse_on" ident* : term
+syntax "recurse" "on" sepBy1(ident, "then") "and" "finally" tactic : term
 
 set_option hygiene false in
 macro_rules
-  | `(simplify_correct_recurse_on $id $[$ids]*) => `(
-    have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val := simplify_correct
-    simplify_correct_recurse_on $[$ids]*
-  )
-  | `(simplify_correct_recurse_on $[$_]*) => `(by aesop)
+  | `(recurse on $[$ids] then* and finally $tactic) => do
+    let mut result ← `(by $tactic;)
+    for id in ids do
+      result ← `(
+        have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val :=
+          simplify_correct
+        $result
+      )
+    `($result)
+
+-- set_option trace.Elab.command true
+-- set_option trace.Elab.step true
 
 attribute [simp] eval simplify in
 theorem simplify_correct {Γ val} :
@@ -128,7 +135,7 @@ theorem simplify_correct {Γ val} :
   | .num _ | .var _ => by simp only [eval]
 
   | .add e₁ e₂ | .sub e₁ e₂ | .mul e₁ e₂ | .div e₁ e₂ =>
-    simplify_correct_recurse_on e₁ e₂
+    recurse on e₁ then e₂ and finally aesop
 
 end SimplifyCorrect
 
