@@ -240,9 +240,19 @@ theorem add_assoc {l m} :
      _ = .succ (add l (add m n)) := by rw [add_assoc]
      _ = add l (add m (.succ n)) := by simp only [add]
 
-theorem mul_comm (m n : ℕ) :
-  mul m n = mul n m :=
-  sorry
+@[simp]
+lemma zero_mul : ∀ {n}, mul 0 n = 0
+  | 0 => by simp only [mul]
+  | .succ n => by simp only [mul, zero_mul, add]
+
+theorem mul_comm {m} :
+  ∀ {n}, mul m n = mul n m
+  | 0 => by simp [mul]
+  | .succ n =>
+    calc mul m (.succ n)
+     _ = add m (mul m n) := by simp only [mul]
+     _ = add (mul n m) m := by rw [mul_comm, add_comm]
+     _ = mul (.succ n) m := by sorry
 
 theorem mul_assoc (l m n : ℕ) :
   mul (mul l m) n = mul l (mul m n) :=

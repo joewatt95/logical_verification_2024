@@ -69,7 +69,8 @@ theorem sum_concat_eq_sums :
   ∀ {ms ns}, sum (ms ++ ns) = sum ms + sum ns
   | [], _ => by simp only [List.nil_append, sum, zero_add]
   | _, [] => by simp only [List.append_nil, sum, add_zero]
-  | m :: ms, n :: ns => by simp only [sum, List.append_eq, sum_concat_eq_sums]; omega
+  | m :: ms, n :: ns =>
+    by simp only [sum, List.append_eq, sum_concat_eq_sums]; omega
 
 theorem sum_reverse_eq_sum : ∀ {ns}, sum (reverse ns) = sum ns
   | [] => by simp only [sum]
