@@ -251,11 +251,11 @@ theorem mul_comm :
 
   | .succ m, .succ n =>
     calc mul (.succ m) (.succ n)
-      _ = add (.succ m) (mul (.succ m) n) := by simp only [mul]
-      _ = add (.succ m) (mul n (.succ m)) := by simp only [mul_comm]
-      _ = add (.succ m) (add n (mul n m)) := by simp only [mul]
-      -- _ = add (.succ m) (add n (mul m n)) := by simp only [mul_comm]
-      _ = mul (.succ n) (.succ m) := by sorry
+     _ = add (.succ m) (mul (.succ m) n) := by simp only [mul]
+     _ = add (.succ m) (mul n (.succ m)) := by simp only [mul_comm]
+     _ = add (.succ m) (add n (mul n m)) := by simp only [mul]
+     _ = add (add n (mul n m)) (.succ m) := by simp only [add_comm]
+     _ = mul (.succ n) (.succ m) := by sorry
 
 theorem mul_assoc (l m n : ℕ) :
   mul (mul l m) n = mul l (mul m n) :=
