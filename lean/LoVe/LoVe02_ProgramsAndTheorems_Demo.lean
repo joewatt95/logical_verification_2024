@@ -95,8 +95,8 @@ def fib : ℕ → ℕ
 /- When there are multiple arguments, separate the patterns by `,`: -/
 
 def add : ℕ → ℕ → ℕ
-  | m, Nat.zero   => m
-  | m, Nat.succ n => Nat.succ (add m n)
+  | m, .zero   => m
+  | m, .succ n => .succ <| add m n
 
 /- `#eval` and `#reduce` evaluate and output the value of a term. -/
 
@@ -206,9 +206,30 @@ the result is a proposition rather than data or a function. -/
 
 namespace SorryTheorems
 
-theorem add_comm (m n : ℕ) :
-  add m n = add n m :=
-  sorry
+attribute [simp] add
+
+example {n} : add n 0 = n := by simp only [add]
+
+@[simp]
+lemma zero_add : ∀ {n}, add 0 n = n
+  | 0 => by simp only [add]
+  | .succ n => by simp only [add, zero_add]
+
+theorem add_comm : ∀ {m n}, add m n = add n m
+  | 0, _ | _, 0 => by simp only [zero_add, add]
+  | .succ m, .succ n =>
+    have h₀ : add m n = add n m := add_comm
+    have h₁ : add (.succ m) n = add n (.succ m) := add_comm
+    have h₂ : add m (.succ n) = add (.succ n) m := add_comm
+
+    calc add (.succ m) (.succ n)
+      = .succ (add (.succ m) n) := by simp only [add]
+    _ = .succ (add n (.succ m)) := by rw [h₁]
+    _ = add (add n m) 2 := by simp only [add]
+    _ = add (add m n) 2 := by rw [h₀]
+    _ = .succ (add m (.succ n)) := by simp only [add]
+    _ = .succ (add (.succ n) m) := by rw [h₂]
+    _ = add (.succ n) (.succ m) := by simp only [add]
 
 theorem add_assoc (l m n : ℕ) :
   add (add l m) n = add l (add m n) :=
