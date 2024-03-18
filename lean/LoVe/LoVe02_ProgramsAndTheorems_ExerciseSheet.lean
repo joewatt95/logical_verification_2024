@@ -119,7 +119,7 @@ macro_rules
   | `(simplify_correct_recurse_on $id $[$ids]*) => `(
     have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val := simplify_correct
     simplify_correct_recurse_on $[$ids]*
- )
+  )
   | `(simplify_correct_recurse_on $[$_]*) => `(by aesop)
 
 attribute [simp] eval simplify in
