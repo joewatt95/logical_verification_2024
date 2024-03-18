@@ -60,7 +60,7 @@ inductive AExp : Type where
   | sub : AExp → AExp → AExp
   | mul : AExp → AExp → AExp
   | div : AExp → AExp → AExp
-
+  deriving BEq, DecidableEq
 
 /- ### Lists -/
 
@@ -124,8 +124,8 @@ If it is not necessary to pattern-match on an argument, it can be moved to
 the left of the `:` and made a named argument: -/
 
 def powerParam (m : ℕ) : ℕ → ℕ
-  | Nat.zero   => 1
-  | Nat.succ n => mul m (powerParam m n)
+  | .zero   => 1
+  | .succ n => mul m <| powerParam m n
 
 #eval powerParam 2 5
 
@@ -142,7 +142,7 @@ def powerIter (m n : ℕ) : ℕ :=
 
 def append (α : Type) : List α → List α → List α
   | .nil,       ys => ys
-  | .cons x xs, ys => .cons x (append α xs ys)
+  | .cons x xs, ys => .cons x <| append α xs ys
 
 /- Because `append` must work for any type of list, the type of its elements is
 provided as an argument. As a result, the type must be provided in every call
@@ -185,12 +185,12 @@ def reverse {α : Type} : List α → List α
   | x :: xs => reverse xs ++ [x]
 
 def eval (env : String → ℤ) : AExp → ℤ
-  | AExp.num i     => i
-  | AExp.var x     => env x
-  | AExp.add e₁ e₂ => eval env e₁ + eval env e₂
-  | AExp.sub e₁ e₂ => eval env e₁ - eval env e₂
-  | AExp.mul e₁ e₂ => eval env e₁ * eval env e₂
-  | AExp.div e₁ e₂ => eval env e₁ / eval env e₂
+  | .num i     => i
+  | .var x     => env x
+  | .add e₁ e₂ => eval env e₁ + eval env e₂
+  | .sub e₁ e₂ => eval env e₁ - eval env e₂
+  | .mul e₁ e₂ => eval env e₁ * eval env e₂
+  | .div e₁ e₂ => eval env e₁ / eval env e₂
 
 #eval eval (λ x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
 
@@ -231,9 +231,14 @@ theorem add_comm : ∀ {m n}, add m n = add n m
     _ = .succ (add (.succ n) m) := by rw [h₂]
     _ = add (.succ n) (.succ m) := by simp only [add]
 
-theorem add_assoc (l m n : ℕ) :
-  add (add l m) n = add l (add m n) :=
-  sorry
+theorem add_assoc {l m} :
+  ∀ {n}, add (add l m) n = add l (add m n)
+  | 0 => by simp only [add]
+  | .succ n =>
+    calc add (add l m) (.succ n)
+     _ = .succ (add (add l m) n) := by simp only [add]
+     _ = .succ (add l (add m n)) := by rw [add_assoc]
+     _ = add l (add m (.succ n)) := by simp only [add]
 
 theorem mul_comm (m n : ℕ) :
   mul m n = mul n m :=

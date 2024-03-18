@@ -3,6 +3,7 @@ Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
 import LoVe.LoVe02_ProgramsAndTheorems_Demo
 
+import Mathlib.Data.Nat.Basic
 
 /- # LoVe Exercise 2: Programs and Theorems
 
@@ -74,16 +75,31 @@ that it also simplifies expressions involving the other three binary
 operators. -/
 
 def simplify : AExp → AExp
-  | .add (AExp.num 0) e₂ => simplify e₂
-  | .add e₁ (AExp.num 0) => simplify e₁
-  -- insert the missing cases here
-  -- catch-all cases below
-  | .num i               => .num i
-  | .var x               => .var x
-  | .add e₁ e₂           => .add (simplify e₁) (simplify e₂)
-  | .sub e₁ e₂           => .sub (simplify e₁) (simplify e₂)
-  | .mul e₁ e₂           => .mul (simplify e₁) (simplify e₂)
-  | .div e₁ e₂           => .div (simplify e₁) (simplify e₂)
+  | .num i => .num i
+  | .var x => .var x
+
+  -- | .add (.num 0) e | .add e (.num 0) => simplify e
+  -- | .add e₁ e₂ => .add (simplify e₁) (simplify e₂)
+
+  | .add e₁ e₂ => match e₁, e₂ with
+    | .num 0, _ => simplify e₂
+    | _, .num 0 => simplify e₁
+    | _, _ => .add (simplify e₁) (simplify e₂)
+
+  | .sub e₁ e₂ => match e₁, e₂ with
+   | _, .num 0 => simplify e₁
+   | _, _ => if e₁ = e₂ then .num 0 else .sub (simplify e₁) (simplify e₂)
+
+  | .mul e₁ e₂ => match e₁, e₂ with
+    | .num 0, _ | _, .num 0 => .num 0
+    | .num 1, _ => simplify e₂
+    | _, .num 1 => simplify e₁
+    | _, _ => .mul (simplify e₁) (simplify e₂)
+
+  | .div e₁ e₂ => match e₁, e₂ with
+    | .num 0, _ | _, .num 0 => .num 0
+    | _, .num 1 => simplify e₁
+    | _, _ => .div (simplify e₁) (simplify e₂)
 
 /- 2.3. Is the `simplify` function correct? In fact, what would it mean for it
 to be correct or not? Intuitively, for `simplify` to be correct, it must
@@ -94,10 +110,28 @@ Given an environment `env` and an expression `e`, state (without proving it)
 the property that the value of `e` after simplification is the same as the
 value of `e` before. -/
 
-theorem simplify_correct (Γ : String → ℤ) (expr : AExp) :
-  ∀ {val}, (Γ ⊢ expr ⇓ val) ↔ Γ ⊢ (simplify expr) ⇓ val :=
-  sorry   -- leave `sorry` alone
+-- section SimplifyCorrect
 
+-- syntax "simplify_correct_recurse_on" ident* : term
+
+-- set_option hygiene false in
+-- macro_rules
+--   | `(simplify_correct_recurse_on $id $[$ids]*) => `(
+--     have {val} : (Γ ⊢ $id ⇓ val) ↔ Γ ⊢ (simplify $id) ⇓ val := simplify_correct
+--     simplify_correct_recurse_on $[$ids]*
+--   )
+--   | `(simplify_correct_recurse_on $[$_]*) => `(by aesop)
+
+attribute [simp] eval simplify in
+theorem simplify_correct {Γ val} :
+  ∀ {expr}, (Γ ⊢ expr ⇓ val) ↔ Γ ⊢ (simplify expr) ⇓ val
+  | .num _ | .var _ => by simp only [eval]
+  | .add e₁ e₂ | .sub e₁ e₂ | .mul e₁ e₂ | .div e₁ e₂ =>
+    have {val} : (Γ ⊢ e₁ ⇓ val) ↔ Γ ⊢ (simplify e₁) ⇓ val := simplify_correct
+    have {val} : (Γ ⊢ e₂ ⇓ val) ↔ Γ ⊢ (simplify e₂) ⇓ val := simplify_correct
+    by aesop
+
+-- end SimplifyCorrect
 
 /- ## Question 3 (**optional**): Map
 

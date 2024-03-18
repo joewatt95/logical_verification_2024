@@ -2,6 +2,8 @@
 Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
 import Aesop
+import Auto.Tactic
+import Duper
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic.LibrarySearch
