@@ -3,10 +3,10 @@ import Lake
 open Lake DSL
 
 package love where
-  moreLinkArgs := #[
-    "-L./.lake/packages/LeanCopilot/.lake/build/lib",
-    "-lctranslate2"
-  ]
+  -- moreLinkArgs := #[
+  --   "-L./.lake/packages/LeanCopilot/.lake/build/lib",
+  --   "-lctranslate2"
+  -- ]
 
 @[default_target]
 lean_lib LoVe where
@@ -14,8 +14,7 @@ lean_lib LoVe where
   globs := #[Glob.submodules `LoVe]
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4"
-    @ "v4.6.0"
+  "https://github.com/leanprover-community/mathlib4" @ "v4.6.1"
 
 -- require LeanCopilot from git
 --   "https://github.com/lean-dojo/LeanCopilot" @ "v1.1.2"
