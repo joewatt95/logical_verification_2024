@@ -16,6 +16,12 @@ import Loogle.Find
 
 /- # LoVelib: Logical Verification Library -/
 
+set_option auto.smt true
+set_option auto.smt.trust true
+set_option auto.smt.solver.name "z3"
+
+set_option trace.auto.smt.printCommands true
+set_option trace.auto.smt.result true
 
 set_option autoImplicit false
 set_option tactic.hygienic false

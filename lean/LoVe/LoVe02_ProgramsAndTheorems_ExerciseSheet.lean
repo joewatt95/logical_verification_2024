@@ -62,12 +62,12 @@ def someEnv : String → ℤ
   | "y" => 17
   | _   => 201
 
-notation Γ "⊢" expr "⇓" val => eval Γ expr = val
+notation Γ:25 "⊢" expr:25 "⇓" val:25 => eval Γ expr = val
 
-#eval eval someEnv (AExp.var "x")   -- expected: 3
+#eval eval someEnv (.var "x")   -- expected: 3
 -- invoke `#eval` here
 
-example : someEnv ⊢ AExp.var "x" ⇓ 3 := by decide
+example : someEnv ⊢ .var "x" ⇓ 3 := by decide
 
 /- 2.2. The following function simplifies arithmetic expressions involving
 addition. It simplifies `0 + e` and `e + 0` to `e`. Complete the definition so
@@ -110,28 +110,27 @@ Given an environment `env` and an expression `e`, state (without proving it)
 the property that the value of `e` after simplification is the same as the
 value of `e` before. -/
 
--- section SimplifyCorrect
+section SimplifyCorrect
 
--- syntax "simplify_correct_recurse_on" ident* : term
+syntax "simplify_correct_recurse_on" ident* : term
 
--- set_option hygiene false in
--- macro_rules
---   | `(simplify_correct_recurse_on $id $[$ids]*) => `(
---     have {val} : (Γ ⊢ $id ⇓ val) ↔ Γ ⊢ (simplify $id) ⇓ val := simplify_correct
---     simplify_correct_recurse_on $[$ids]*
---   )
---   | `(simplify_correct_recurse_on $[$_]*) => `(by aesop)
+set_option hygiene false in
+macro_rules
+  | `(simplify_correct_recurse_on $id $[$ids]*) => `(
+    have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val := simplify_correct
+    simplify_correct_recurse_on $[$ids]*
+ )
+  | `(simplify_correct_recurse_on $[$_]*) => `(by aesop)
 
 attribute [simp] eval simplify in
 theorem simplify_correct {Γ val} :
-  ∀ {expr}, (Γ ⊢ expr ⇓ val) ↔ Γ ⊢ (simplify expr) ⇓ val
+  ∀ {expr}, Γ ⊢ expr ⇓ val ↔ Γ ⊢ simplify expr ⇓ val
   | .num _ | .var _ => by simp only [eval]
-  | .add e₁ e₂ | .sub e₁ e₂ | .mul e₁ e₂ | .div e₁ e₂ =>
-    have {val} : (Γ ⊢ e₁ ⇓ val) ↔ Γ ⊢ (simplify e₁) ⇓ val := simplify_correct
-    have {val} : (Γ ⊢ e₂ ⇓ val) ↔ Γ ⊢ (simplify e₂) ⇓ val := simplify_correct
-    by aesop
 
--- end SimplifyCorrect
+  | .add e₁ e₂ | .sub e₁ e₂ | .mul e₁ e₂ | .div e₁ e₂ =>
+    simplify_correct_recurse_on e₁ e₂
+
+end SimplifyCorrect
 
 /- ## Question 3 (**optional**): Map
 
