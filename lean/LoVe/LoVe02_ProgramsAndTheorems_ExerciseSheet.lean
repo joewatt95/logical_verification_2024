@@ -122,7 +122,7 @@ macro_rules
       let indexFromEnd := ids.size - 1 - index
       if let some id := ids[indexFromEnd]? then
         result ← `(
-          have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val :=
+          have : ∀ {val}, Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val :=
             simplify_correct
           $result
         )
