@@ -76,8 +76,7 @@ theorem sum_reverse_eq_sum : ∀ {ns}, sum (reverse ns) = sum ns
   | [] => by simp only [sum]
   | n :: ns =>
     calc sum (reverse <| n :: ns)
-       = sum (reverse ns ++ [n]) := by rw [reverse]
-     _ = sum ns + sum [n] := by rw [sum_concat_eq_sums, sum_reverse_eq_sum]
+     _ = sum ns + sum [n] := by rw [reverse, sum_concat_eq_sums, sum_reverse_eq_sum]
      _ = sum (n :: ns) := by simp only [sum, add_zero]; omega
 
 end LoVe

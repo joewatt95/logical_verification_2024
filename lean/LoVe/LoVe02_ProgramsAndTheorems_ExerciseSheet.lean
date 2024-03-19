@@ -118,12 +118,14 @@ set_option hygiene false in
 macro_rules
   | `(recurse on $[$ids] then* and finally $tactic) => do
     let mut result ← `(by $tactic;)
-    for id in ids do
-      result ← `(
-        have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val :=
-          simplify_correct
-        $result
-      )
+    for index in [:ids.size] do
+      let indexFromEnd := ids.size - 1 - index
+      if let some id := ids[indexFromEnd]? then
+        result ← `(
+          have {val} : Γ ⊢ $id ⇓ val ↔ Γ ⊢ simplify $id ⇓ val :=
+            simplify_correct
+          $result
+        )
     `($result)
 
 -- set_option trace.Elab.command true
