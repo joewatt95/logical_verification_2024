@@ -112,8 +112,19 @@ theorem tfae_classical_axioms :
   . exact EM_of_DN
   tfae_finish
 
--- theorem EM_of_Peirce : Peirce → ExcludedMiddle :=
---   sorry
+macro "get_tfae_classical_axioms" "(" index₀:term "," index₁:term ")" : term =>
+  `(tfae_classical_axioms
+    |> (List.TFAE.out . $index₀ $index₁)
+    |>.mp)
+
+theorem EM_of_Peirce : Peirce → ExcludedMiddle :=
+  get_tfae_classical_axioms(1, 0)
+
+theorem Peirce_of_DN : DoubleNegation → Peirce :=
+  get_tfae_classical_axioms(2, 1)
+
+theorem DN_of_EM : ExcludedMiddle → DoubleNegation :=
+  get_tfae_classical_axioms(0, 2)
 
 end BackwardProofs
 
