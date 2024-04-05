@@ -78,7 +78,7 @@ be necessary. -/
 theorem forall_and {α : Type} (p q : α → Prop) :
   (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) := by
   apply Iff.intro
-  . intro (h : ∀x, p x ∧ q x)
+  . intro (h : ∀ x, p x ∧ q x)
     apply And.intro
     . intro x
       have ⟨(h_px : p x), _⟩ := h x
@@ -98,24 +98,20 @@ theorem forall_and {α : Type} (p q : α → Prop) :
 
 #check mul
 
-theorem mul_zero (n : ℕ) : mul 0 n = 0 :=
-  LoVe.SorryTheorems.zero_mul
+theorem mul_zero : ∀ {n}, mul 0 n = 0 := SorryTheorems.zero_mul
 
 #check add_succ
-theorem mul_succ (m n : ℕ) :
-  mul (Nat.succ m) n = add (mul m n) n :=
-  sorry
+theorem mul_succ {m n} :
+  mul (.succ m) n = add (mul m n) n :=
+  by simp only [SorryTheorems.succ_mul, SorryTheorems.add_comm]
 
 /- 2.2. Prove commutativity and associativity of multiplication using the
 `induction` tactic. Choose the induction variable carefully. -/
 
-theorem mul_comm (m n : ℕ) :
-  mul m n = mul n m :=
-  sorry
+theorem mul_comm (m n : ℕ) : mul m n = mul n m := SorryTheorems.mul_comm
 
-theorem mul_assoc (l m n : ℕ) :
-  mul (mul l m) n = mul l (mul m n) :=
-  sorry
+theorem mul_assoc (l m n : ℕ) : mul (mul l m) n = mul l (mul m n) :=
+  SorryTheorems.mul_assoc
 
 /- 2.3. Prove the symmetric variant of `mul_add` using `rw`. To apply
 commutativity at a specific position, instantiate the rule by passing some
@@ -123,7 +119,7 @@ arguments (e.g., `mul_comm _ l`). -/
 
 theorem add_mul (l m n : ℕ) :
   mul (add l m) n = add (mul n l) (mul n m) :=
-  sorry
+  by simp only [SorryTheorems.mul_add, mul_comm]
 
 
 /- ## Question 3 (**optional**): Intuitionistic Logic
@@ -133,14 +129,14 @@ axiom. There are several possibilities for the choice of axiom. In this
 question, we are concerned with the logical equivalence of three different
 axioms: -/
 
-def ExcludedMiddle : Prop :=
-  ∀a : Prop, a ∨ ¬ a
+abbrev ExcludedMiddle : Prop :=
+  ∀ {a : Prop}, a ∨ ¬ a
 
-def Peirce : Prop :=
-  ∀a b : Prop, ((a → b) → a) → a
+abbrev Peirce : Prop :=
+  ∀ {a b : Prop}, ((a → b) → a) → a
 
-def DoubleNegation : Prop :=
-  ∀a : Prop, (¬¬ a) → a
+abbrev DoubleNegation : Prop :=
+  ∀ {a : Prop}, ¬¬ a → a
 
 /- For the proofs below, avoid using theorems from Lean's `Classical` namespace.
 
@@ -150,23 +146,42 @@ Hint: You will need `Or.elim` and `False.elim`. You can use
 `rw [ExcludedMiddle]` to unfold the definition of `ExcludedMiddle`,
 and similarly for `Peirce`. -/
 
-theorem Peirce_of_EM :
-  ExcludedMiddle → Peirce :=
-  sorry
+theorem Peirce_of_EM : ExcludedMiddle → Peirce
+  | (h_em : ∀ {φ}, φ ∨ ¬ φ), φ, ψ, (h : (φ → ψ) → φ) =>
+    match h_em with
+    | .inl h_φ => h_φ
+    | .inr h_not_φ =>
+      suffices φ → ψ from h this
+      λ h_φ ↦
+        have : ⊥ := h_not_φ h_φ
+        False.elim this
 
 /- 3.2 (**optional**). Prove the following implication using tactics. -/
 
 theorem DN_of_Peirce :
-  Peirce → DoubleNegation :=
-  sorry
+  Peirce → DoubleNegation
+  | (h_peirce : ∀ {φ ψ}, ((φ → ψ) → φ) → φ), φ, (h_not_not_φ : ¬¬φ) =>
+  suffices (φ → ⊥) → φ from h_peirce this
+  λ h_not_φ : ¬ φ ↦
+    have : ⊥ := h_not_not_φ h_not_φ
+    False.elim this
 
 /- We leave the remaining implication for the homework: -/
 
 namespace SorryTheorems
 
 theorem EM_of_DN :
-  DoubleNegation → ExcludedMiddle :=
-sorry
+  DoubleNegation → ExcludedMiddle
+  | (h_dne : ∀ {φ}, ¬¬φ → φ), φ =>
+  suffices ¬¬ (φ ∨ ¬ φ) from h_dne this
+  λ h : ¬ (φ ∨ ¬ φ) ↦
+    have ⟨h_not_φ, h_not_not_φ⟩ : ¬ φ ∧ ¬ ¬ φ := not_and_not_of_not_or h
+    h_not_φ |> h_not_not_φ |> False.elim
+  where
+    not_and_not_of_not_or {φ ψ} (h_not_φ_or_ψ : ¬ (φ ∨ ψ)) : ¬ φ ∧ ¬ ψ :=
+      have not_φ : φ → ⊥ := (. |> .inl |> h_not_φ_or_ψ)
+      have not_ψ : ψ → ⊥ := (. |> .inr |> h_not_φ_or_ψ)
+      ⟨not_φ, not_ψ⟩
 
 end SorryTheorems
 

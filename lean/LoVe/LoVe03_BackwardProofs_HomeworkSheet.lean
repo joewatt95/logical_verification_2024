@@ -2,6 +2,8 @@
 Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
 import LoVe.LoVe03_BackwardProofs_ExerciseSheet
+import Mathlib.Data.List.TFAE
+import Mathlib.Tactic.TFAE
 
 
 /- # LoVe Homework 3 (10 points): Backward Proofs
@@ -88,9 +90,7 @@ Hints:
 #check DoubleNegation
 #check ExcludedMiddle
 
-theorem EM_of_DN :
-  DoubleNegation → ExcludedMiddle :=
-  sorry
+theorem EM_of_DN : DoubleNegation → ExcludedMiddle := SorryTheorems.EM_of_DN
 
 /- 2.3 (2 points). We have proved three of the six possible implications
 between `ExcludedMiddle`, `Peirce`, and `DoubleNegation`. State and prove the
@@ -101,6 +101,19 @@ three missing implications, exploiting the three theorems we already have. -/
 #check EM_of_DN
 
 -- enter your solution here
+
+theorem tfae_classical_axioms :
+  List.TFAE [ExcludedMiddle, Peirce, DoubleNegation] := by
+  tfae_have 1 → 2
+  . exact Peirce_of_EM
+  tfae_have 2 → 3
+  . exact DN_of_Peirce
+  tfae_have 3 → 1
+  . exact EM_of_DN
+  tfae_finish
+
+-- theorem EM_of_Peirce : Peirce → ExcludedMiddle :=
+--   sorry
 
 end BackwardProofs
 

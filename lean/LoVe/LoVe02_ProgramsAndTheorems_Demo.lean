@@ -192,7 +192,7 @@ def eval (env : String → ℤ) : AExp → ℤ
   | .mul e₁ e₂ => eval env e₁ * eval env e₂
   | .div e₁ e₂ => eval env e₁ / eval env e₂
 
-#eval eval (λ x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
+#eval eval (λ _x ↦ 7) (AExp.div (AExp.var "y") (AExp.num 0))
 
 /- Lean only accepts the function definitions for which it can prove
 termination. In particular, it accepts __structurally recursive__ functions,
@@ -215,13 +215,13 @@ lemma zero_add : ∀ {n}, add 0 n = n
   | .zero => by simp only [add]
   | .succ n => by simp only [add, zero_add]
 
+@[simp]
 theorem add_comm : ∀ {m n}, add m n = add n m
   | .zero, _ | _, .zero => by simp only [zero_add, add]
   | .succ m, .succ n =>
     have h₀ : add m n = add n m := add_comm
     have h₁ : add (.succ m) n = add n (.succ m) := add_comm
     have h₂ : add m (.succ n) = add (.succ n) m := add_comm
-
     calc add (.succ m) (.succ n)
       = .succ (add (.succ m) n) := by simp only [add]
     _ = .succ (add n (.succ m)) := by rw [h₁]
@@ -231,6 +231,7 @@ theorem add_comm : ∀ {m n}, add m n = add n m
     _ = .succ (add (.succ n) m) := by rw [h₂]
     _ = add (.succ n) (.succ m) := by simp only [add]
 
+@[simp]
 theorem add_assoc {l m} :
   ∀ {n}, add (add l m) n = add l (add m n)
   | .zero => by simp only [add]
@@ -245,29 +246,78 @@ lemma zero_mul : ∀ {n}, mul .zero n = .zero
   | .zero => by simp only [mul]
   | .succ n => by simp only [mul, zero_mul, add]
 
+@[simp]
+lemma succ_add {m} : ∀ {n}, add (.succ m) n = .succ (add m n)
+  | 0 | .succ n => by simp only [add, succ_add]
+
+@[simp]
+lemma succ_mul {m} :
+  ∀ {n}, mul (.succ m) n = add (mul m n) n
+  | 0 => by simp only [mul, add]
+  | .succ n => by simp only [mul, add, succ_mul, succ_add, add_assoc]
+
+@[simp]
+lemma add_add {a b} :
+  ∀ {c}, add a (add b c) = add b (add a c)
+  | 0 => by simp only [add, add_comm]
+  | .succ c => by simp only [add, add_add]
+
+@[simp]
 theorem mul_comm :
   ∀ {m n}, mul m n = mul n m
   | 0, _ | _, 0 => by simp only [zero_mul, mul]
 
   | .succ m, .succ n =>
-    calc mul (.succ m) (.succ n)
-     _ = add (.succ m) (mul (.succ m) n) := by simp only [mul]
-     _ = add (.succ m) (mul n (.succ m)) := by simp only [mul_comm]
-     _ = add (.succ m) (add n (mul n m)) := by simp only [mul]
-     _ = add (add n (mul n m)) (.succ m) := by simp only [add_comm]
-     _ = mul (.succ n) (.succ m) := by sorry
+    have : mul m n = mul n m := mul_comm
+    by simp only [mul, succ_mul, this, add_comm, add, add_add]
 
-theorem mul_assoc (l m n : ℕ) :
-  mul (mul l m) n = mul l (mul m n) :=
-  sorry
+@[simp]
+theorem mul_add {l m} :
+  ∀ {n}, mul l (add m n) = add (mul l m) (mul l n)
+  | 0 => rfl
+  | .succ _ => by simp only [mul, mul_add, add_add]
 
-theorem mul_add (l m n : ℕ) :
-  mul l (add m n) = add (mul l m) (mul l n) :=
-  sorry
+@[simp]
+theorem mul_assoc {l m} :
+  ∀ {n}, mul (mul l m) n = mul l (mul m n)
+  | 0 => by aesop
+  | .succ n =>
+    have : mul (mul l m) n = mul l (mul m n) := mul_assoc
+    calc
+      mul (mul l m) (.succ n)
+    = add (mul l m) (mul (mul l m) n) := by simp only [mul]
+  _ = mul l (add m (mul m n)) := by aesop
+  _ = mul l (mul m (.succ n)) := by simp only [mul]
 
-theorem reverse_reverse {α : Type} (xs : List α) :
-  reverse (reverse xs) = xs :=
-  sorry
+-- lemma eq_nil_of_length {α} : ∀ {xs : List α}, xs.length = 0 → xs = []
+--   | [], _ | _ :: _, _ => by aesop
+
+lemma reverse_cons {α} {y : α} :
+  ∀ {xs : List α}, reverse (xs ++ [y]) = y :: reverse xs
+  | [] => by aesop
+  | x :: xs => calc
+    reverse (x :: xs ++ [y])
+_ = reverse (xs ++ [y]) ++ [x] := by simp only [reverse, List.append_eq]
+_ = y :: reverse xs ++ [x] := by simp only [reverse_cons]
+_ = y :: reverse (x :: xs) := by simp only [List.cons_append, reverse]
+
+@[simp]
+theorem reverse_reverse {α : Type} :
+  ∀ {xs : List α}, reverse (reverse xs) = xs
+  | [] => rfl
+  | x :: xs => by simp only [reverse, reverse_cons, reverse_reverse]
+
+theorem reverse_append {α} {xs : List α} :
+  ∀ {ys : List α}, reverse (xs ++ ys) = reverse ys ++ reverse xs
+  | [] => by aesop
+  | y :: ys => calc
+    reverse (xs ++ y :: ys)
+_ = reverse (xs ++ [y] ++ ys) :=
+    by simp only [List.append_assoc, List.singleton_append]
+_ = reverse ys ++ reverse (xs ++ [y]) := reverse_append
+_ = reverse ys ++ [y] ++ reverse xs :=
+    by simp only [reverse_cons, List.append_assoc, List.singleton_append]
+_ = reverse (y :: ys) ++ reverse xs := by simp only [reverse]
 
 /- Axioms are like theorems but without proofs. Opaque declarations are like
 definitions but without bodies. -/

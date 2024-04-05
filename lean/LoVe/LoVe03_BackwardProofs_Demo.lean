@@ -302,18 +302,18 @@ theorem add_zero (n : ℕ) :
     | succ n' ih => simp [add, ih]
 
 theorem add_succ (m n : ℕ) :
-  add (Nat.succ m) n = Nat.succ (add m n) :=
-  by
-    induction n with
-    | zero       => rfl
-    | succ n' ih => simp [add, ih]
+  add (.succ m) n = .succ (add m n) :=
+  by aesop
+    -- induction n with
+    -- | zero       => rfl
+    -- | succ n' ih => simp [add, ih]
 
 theorem add_comm (m n : ℕ) :
   add m n = add n m :=
-  by
-    induction n with
-    | zero       => simp [add, add_zero]
-    | succ n' ih => simp [add, add_succ, ih]
+  by aesop
+    -- induction n with
+    -- | zero       => simp [add, add_zero]
+    -- | succ n' ih => simp [add, add_succ, ih]
 
 theorem add_assoc (l m n : ℕ) :
   add (add l m) n = add l (add m n) :=
@@ -338,8 +338,8 @@ theorem mul_add (l m n : ℕ) :
     induction n with
     | zero       => rfl
     | succ n' ih =>
-      simp [add, mul, ih]
-      ac_rfl
+      simp only [mul, ih, SorryTheorems.add_add]
+      -- ac_rfl
 
 /- ## Cleanup Tactics
 
