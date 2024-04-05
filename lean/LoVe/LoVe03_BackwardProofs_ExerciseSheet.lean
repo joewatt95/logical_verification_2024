@@ -1,6 +1,7 @@
 /- Copyright © 2018–2024 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
 Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
+import LoVe.LoVe02_ProgramsAndTheorems_Demo
 import LoVe.LoVe03_BackwardProofs_Demo
 
 
@@ -25,36 +26,48 @@ Hint: Some strategies for carrying out such proofs are described at the end of
 Section 3.3 in the Hitchhiker's Guide. -/
 
 theorem I (a : Prop) :
-  a → a :=
-  sorry
+  a → a := by
+  intro ha
+  apply ha
 
 theorem K (a b : Prop) :
-  a → b → b :=
-  sorry
+  a → b → b := by
+  intro _ha hb
+  apply hb
 
 theorem C (a b c : Prop) :
-  (a → b → c) → b → a → c :=
-  sorry
+  (a → b → c) → b → a → c := by
+  intro h_c_of_a_b hb ha
+  apply h_c_of_a_b
+  apply ha
+  apply hb
 
 theorem proj_fst (a : Prop) :
-  a → a → a :=
-  sorry
+  a → a → a := by
+  intro ha _ha
+  apply ha
 
 /- Please give a different answer than for `proj_fst`: -/
 
 theorem proj_snd (a : Prop) :
-  a → a → a :=
-  sorry
+  a → a → a := by
+  intro _ha ha
+  apply ha
 
 theorem some_nonsense (a b c : Prop) :
-  (a → b → c) → a → (a → c) → b → c :=
-  sorry
+  (a → b → c) → a → (a → c) → b → c := by
+  intro _h_c_of_a_b ha h_c_of_a _hb
+  apply h_c_of_a
+  apply ha
 
 /- 1.2. Prove the contraposition rule using basic tactics. -/
 
 theorem contrapositive (a b : Prop) :
-  (a → b) → ¬ b → ¬ a :=
-  sorry
+  (a → b) → ¬ b → ¬ a := by
+  intro h_b_of_a h_not_b ha
+  apply h_b_of_a at ha
+  apply h_not_b at ha
+  assumption
 
 /- 1.3. Prove the distributivity of `∀` over `∧` using basic tactics.
 
@@ -63,9 +76,20 @@ forward reasoning, like in the proof of `and_swap_braces` in the lecture, might
 be necessary. -/
 
 theorem forall_and {α : Type} (p q : α → Prop) :
-  (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) :=
-  sorry
-
+  (∀x, p x ∧ q x) ↔ (∀x, p x) ∧ (∀x, q x) := by
+  apply Iff.intro
+  . intro (h : ∀x, p x ∧ q x)
+    apply And.intro
+    . intro x
+      have ⟨(h_px : p x), _⟩ := h x
+      exact h_px
+    . intro x
+      have ⟨_, (h_qx : q x)⟩ := h x
+      exact h_qx
+  . intro ⟨(h_px : ∀ x, p x), (h_qx : ∀ x, q x)⟩ x
+    apply And.intro
+    . exact h_px x
+    . exact h_qx x
 
 /- ## Question 2: Natural Numbers
 
@@ -74,9 +98,8 @@ theorem forall_and {α : Type} (p q : α → Prop) :
 
 #check mul
 
-theorem mul_zero (n : ℕ) :
-  mul 0 n = 0 :=
-  sorry
+theorem mul_zero (n : ℕ) : mul 0 n = 0 :=
+  LoVe.SorryTheorems.zero_mul
 
 #check add_succ
 theorem mul_succ (m n : ℕ) :

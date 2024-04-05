@@ -163,4 +163,13 @@ second property as generally as possible, for arbitrary types. -/
 
 -- enter your theorem statements here
 
+theorem map_id {α} : ∀ {xs : List α}, map id xs = xs
+  | [] => rfl
+  | _ :: _ => by simp only [map, id_eq, map_id]
+
+theorem map_compose {α β γ} {f : α → β} {g : β → γ} :
+  ∀ {xs : List α}, map (g ∘ f) xs = map g (map f xs)
+  | [] => rfl
+  | _ :: _ => by simp only [map, Function.comp_apply, map_compose]
+
 end LoVe

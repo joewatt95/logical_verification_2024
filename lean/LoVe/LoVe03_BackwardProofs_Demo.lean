@@ -34,7 +34,7 @@ theorem fst_of_two_props :
   ∀a b : Prop, a → b → a :=
   by
     intro a b
-    intro ha hb
+    intro ha _hb
     apply ha
 
 /- Note that `a → b → a` is parsed as `a → (b → a)`.
@@ -52,7 +52,7 @@ from the goal's conclusion (after `⊢`) into the goal's hypotheses (before `⊢
 `apply` matches the goal's conclusion with the conclusion of the specified
 theorem and adds the theorem's hypotheses as new goals. -/
 
-theorem fst_of_two_props_params (a b : Prop) (ha : a) (hb : b) :
+theorem fst_of_two_props_params (a b : Prop) (ha : a) (_hb : b) :
   a :=
   by apply ha
 
@@ -75,7 +75,7 @@ Next, `exact` matches the goal's conclusion with the specified theorem, closing
 the goal. We can often use `apply` in such situations, but `exact` communicates
 our intentions better. -/
 
-theorem fst_of_two_props_exact (a b : Prop) (ha : a) (hb : b) :
+theorem fst_of_two_props_exact (a b : Prop) (ha : a) (_hb : b) :
   a :=
   by exact ha
 
@@ -83,7 +83,7 @@ theorem fst_of_two_props_exact (a b : Prop) (ha : a) (hb : b) :
 goal's conclusion and applies it to prove the goal. -/
 
 theorem fst_of_two_props_assumption (a b : Prop)
-    (ha : a) (hb : b) :
+    (ha : a) (_hb : b) :
   a :=
   by assumption
 
@@ -326,11 +326,11 @@ theorem add_assoc (l m n : ℕ) :
 associative operator using the type class instance mechanism (explained in
 lecture 5). This is useful for the `ac_rfl` invocation below. -/
 
-instance IsAssociative_add : IsAssociative ℕ add :=
-  { assoc := add_assoc }
+instance Associative_add : Std.Associative add where
+  assoc := add_assoc
 
-instance IsCommutative_add : IsCommutative ℕ add :=
-  { comm := add_comm }
+instance Commutative_add : Std.Commutative add where
+  comm := add_comm
 
 theorem mul_add (l m n : ℕ) :
   mul l (add m n) = add (mul l m) (mul l n) :=
@@ -340,7 +340,6 @@ theorem mul_add (l m n : ℕ) :
     | succ n' ih =>
       simp [add, mul, ih]
       ac_rfl
-
 
 /- ## Cleanup Tactics
 
