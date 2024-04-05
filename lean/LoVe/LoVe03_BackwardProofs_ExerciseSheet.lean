@@ -62,12 +62,12 @@ theorem some_nonsense (a b c : Prop) :
 
 /- 1.2. Prove the contraposition rule using basic tactics. -/
 
-theorem contrapositive (a b : Prop) :
+theorem contrapositive {a b : Prop} :
   (a → b) → ¬ b → ¬ a := by
-  intro h_b_of_a h_not_b ha
-  apply h_b_of_a at ha
-  apply h_not_b at ha
-  assumption
+  intro h_b_of_a h_not_b h_a
+  apply h_not_b
+  apply h_b_of_a
+  exact h_a
 
 /- 1.3. Prove the distributivity of `∀` over `∧` using basic tactics.
 
@@ -170,6 +170,11 @@ theorem DN_of_Peirce :
 
 namespace SorryTheorems
 
+lemma not_and_not_of_not_or {φ ψ} (h_not_φ_or_ψ : ¬ (φ ∨ ψ)) : ¬ φ ∧ ¬ ψ
+  where
+    left := (. |> .inl |> h_not_φ_or_ψ)
+    right := (. |> .inr |> h_not_φ_or_ψ)
+
 theorem EM_of_DN :
   DoubleNegation → ExcludedMiddle
   | (h_dne : ∀ {φ}, ¬¬φ → φ), φ =>
@@ -177,11 +182,6 @@ theorem EM_of_DN :
   λ h : ¬ (φ ∨ ¬ φ) ↦
     have ⟨h_not_φ, h_not_not_φ⟩ : ¬ φ ∧ ¬ ¬ φ := not_and_not_of_not_or h
     h_not_φ |> h_not_not_φ |> False.elim
-  where
-    not_and_not_of_not_or {φ ψ} (h_not_φ_or_ψ : ¬ (φ ∨ ψ)) : ¬ φ ∧ ¬ ψ :=
-      have not_φ : φ → ⊥ := (. |> .inl |> h_not_φ_or_ψ)
-      have not_ψ : ψ → ⊥ := (. |> .inr |> h_not_φ_or_ψ)
-      ⟨not_φ, not_ψ⟩
 
 end SorryTheorems
 
