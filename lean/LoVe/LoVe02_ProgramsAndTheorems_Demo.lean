@@ -292,32 +292,21 @@ theorem mul_assoc {l m} :
 -- lemma eq_nil_of_length {α} : ∀ {xs : List α}, xs.length = 0 → xs = []
 --   | [], _ | _ :: _, _ => by aesop
 
-lemma reverse_cons {α} {y : α} :
-  ∀ {xs : List α}, reverse (xs ++ [y]) = y :: reverse xs
+theorem reverse_append {α} {ys : List α} :
+  ∀ {xs : List α}, reverse (xs ++ ys) = reverse ys ++ reverse xs
   | [] => by aesop
-  | x :: xs => calc
-    reverse (x :: xs ++ [y])
-_ = reverse (xs ++ [y]) ++ [x] := by simp only [reverse, List.append_eq]
-_ = y :: reverse xs ++ [x] := by simp only [reverse_cons]
-_ = y :: reverse (x :: xs) := by simp only [List.cons_append, reverse]
+  | x :: xs =>
+  by simp only [reverse, List.append_eq, reverse_append, List.append_assoc]
 
 @[simp]
 theorem reverse_reverse {α : Type} :
   ∀ {xs : List α}, reverse (reverse xs) = xs
   | [] => rfl
-  | x :: xs => by simp only [reverse, reverse_cons, reverse_reverse]
-
-theorem reverse_append {α} {xs : List α} :
-  ∀ {ys : List α}, reverse (xs ++ ys) = reverse ys ++ reverse xs
-  | [] => by aesop
-  | y :: ys => calc
-    reverse (xs ++ y :: ys)
-_ = reverse (xs ++ [y] ++ ys) :=
-    by simp only [List.append_assoc, List.singleton_append]
-_ = reverse ys ++ reverse (xs ++ [y]) := reverse_append
-_ = reverse ys ++ [y] ++ reverse xs :=
-    by simp only [reverse_cons, List.append_assoc, List.singleton_append]
-_ = reverse (y :: ys) ++ reverse xs := by simp only [reverse]
+  | x :: xs =>
+    by simp only [
+      reverse, reverse_append, reverse_reverse,
+      List.nil_append, List.singleton_append
+    ]
 
 /- Axioms are like theorems but without proofs. Opaque declarations are like
 definitions but without bodies. -/

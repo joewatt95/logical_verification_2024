@@ -27,9 +27,7 @@ __proof terms__.
 The simplest kind of structured proof is the name of a theorem, possibly with
 arguments. -/
 
-theorem add_comm (m n : ℕ) :
-  add m n = add n m :=
-  sorry
+theorem add_comm (m n : ℕ) : add m n = add n m := SorryTheorems.add_comm
 
 theorem add_comm_zero_left (n : ℕ) :
   add 0 n = add n 0 :=
@@ -52,16 +50,16 @@ theorem fst_of_two_props :
   ∀a b : Prop, a → b → a :=
   fix a b : Prop
   assume ha : a
-  assume hb : b
+  assume _hb : b
   show a from
     ha
 
-theorem fst_of_two_props_show (a b : Prop) (ha : a) (hb : b) :
+theorem fst_of_two_props_show (a b : Prop) (ha : a) (_hb : b) :
   a :=
   show a from
     ha
 
-theorem fst_of_two_props_no_show (a b : Prop) (ha : a) (hb : b) :
+theorem fst_of_two_props_no_show (a b : Prop) (ha : a) (_hb : b) :
   a :=
   ha
 
@@ -83,7 +81,7 @@ theorem prop_comp_inline (a b c : Prop) (hab : a → b)
   a → c :=
   assume ha : a
   show c from
-    hbc (hab ha)
+    hbc <| hab ha
 
 
 /- ## Forward Reasoning about Connectives and Quantifiers -/
@@ -115,13 +113,13 @@ def double (n : ℕ) : ℕ :=
 
 theorem nat_exists_double_iden :
   ∃n : ℕ, double n = n :=
-  Exists.intro 0
+  .intro 0
     (show double 0 = 0 from
      by rfl)
 
 theorem nat_exists_double_iden_no_show :
-  ∃n : ℕ, double n = n :=
-  Exists.intro 0 (by rfl)
+  ∃ n : ℕ, double n = n :=
+  .intro 0 (by rfl)
 
 theorem modus_ponens (a b : Prop) :
   (a → b) → a → b :=
@@ -392,7 +390,7 @@ can also be done by pattern matching and recursion:
 #check reverse
 
 theorem reverse_append {α : Type} :
-  ∀xs ys : List α,
+  ∀ xs ys : List α,
     reverse (xs ++ ys) = reverse ys ++ reverse xs
   | [],      ys => by simp [reverse]
   | x :: xs, ys => by simp [reverse, reverse_append xs]
@@ -405,7 +403,7 @@ theorem reverse_append_tactical {α : Type} (xs ys : List α) :
     | cons x xs' ih => simp [reverse, ih]
 
 theorem reverse_reverse {α : Type} :
-  ∀xs : List α, reverse (reverse xs) = xs
+  ∀ xs : List α, reverse (reverse xs) = xs
   | []      => by rfl
   | x :: xs =>
     by simp [reverse, reverse_append, reverse_reverse xs]

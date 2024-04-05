@@ -167,9 +167,9 @@ theorem map_id {α} : ∀ {xs : List α}, map id xs = xs
   | [] => rfl
   | _ :: _ => by simp only [map, id_eq, map_id]
 
-theorem map_compose {α β γ} {f : α → β} {g : β → γ} :
+theorem map_comp {α β γ} {f : α → β} {g : β → γ} :
   ∀ {xs : List α}, map (g ∘ f) xs = map g (map f xs)
   | [] => rfl
-  | _ :: _ => by simp only [map, Function.comp_apply, map_compose]
+  | _ :: _ => by simp only [map, Function.comp_apply, map_comp]
 
 end LoVe
