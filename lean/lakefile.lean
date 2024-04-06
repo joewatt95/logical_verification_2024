@@ -15,11 +15,11 @@ lean_lib LoVe where
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4"
-    @ "483848e8afb952d25f51f5ab865b4b3525c086b9"
+    @ "3f22805959e0d0d2a79b84610a1fefaa86b58391"
 
 require auto from git
   "https://github.com/leanprover-community/lean-auto"
-    @ "1507142f79f05371e5eb25202eec6396bb940d72"
+    @ "27f1b265f6ab512cfa38c874b9070f63b0caf7ed"
 
 require Duper from git
   "https://github.com/leanprover-community/duper"
