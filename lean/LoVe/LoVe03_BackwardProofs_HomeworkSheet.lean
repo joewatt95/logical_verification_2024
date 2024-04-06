@@ -88,7 +88,7 @@ Hints:
 theorem herman {a : Prop} : ¬ ¬ (¬ ¬ a → a) :=
   suffices ¬ ¬ (a ∨ ¬ a) from this |> not_not_implies dne_of_lem
   λ h : ¬ (a ∨ ¬ a) ↦
-    have ⟨h_not_a, h_not_not_a⟩ : ¬ a ∧ ¬ ¬ a :=
+    have ⟨(h_not_a : ¬ a), (h_not_not_a : ¬ ¬ a)⟩ :=
       SorryTheorems.not_and_not_of_not_or h
     show ⊥ from h_not_not_a h_not_a
   where
@@ -158,6 +158,8 @@ theorem EM_of_Peirce : Peirce → ExcludedMiddle :=
 theorem Peirce_of_DN : DoubleNegation → Peirce :=
   get_tfae_classical_axioms(2, 1)
 
+theorem DN_of_EM : ExcludedMiddle → DoubleNegation :=
+  get_tfae_classical_axioms(0, 2)
 
 end BackwardProofs
 
