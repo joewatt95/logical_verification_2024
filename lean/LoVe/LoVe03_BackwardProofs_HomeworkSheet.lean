@@ -96,7 +96,7 @@ theorem herman {a : Prop} : ¬ ¬ (¬ ¬ a → a) :=
       | .inl h_a, _ => h_a
       | .inr h_not_a, h_not_not_a =>
         have : ⊥ := h_not_not_a h_not_a
-        False.elim this
+        this.elim
 
     not_not_implies {a b} : (a → b) → ¬ ¬ a → ¬ ¬ b
       | h_b_of_a, h_not_not_a, h_not_b =>

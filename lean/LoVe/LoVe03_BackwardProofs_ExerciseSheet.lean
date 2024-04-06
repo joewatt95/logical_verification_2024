@@ -154,7 +154,7 @@ theorem Peirce_of_EM : ExcludedMiddle → Peirce
       suffices φ → ψ from h this
       λ h_φ ↦
         have : ⊥ := h_not_φ h_φ
-        False.elim this
+        this.elim
 
 /- 3.2 (**optional**). Prove the following implication using tactics. -/
 
@@ -164,7 +164,7 @@ theorem DN_of_Peirce :
   suffices (φ → ⊥) → φ from h_peirce this
   λ h_not_φ : ¬ φ ↦
     have : ⊥ := h_not_not_φ h_not_φ
-    False.elim this
+    this.elim
 
 /- We leave the remaining implication for the homework: -/
 
@@ -181,7 +181,7 @@ theorem EM_of_DN :
   suffices ¬¬ (φ ∨ ¬ φ) from h_dne this
   λ h : ¬ (φ ∨ ¬ φ) ↦
     have ⟨h_not_φ, h_not_not_φ⟩ : ¬ φ ∧ ¬ ¬ φ := not_and_not_of_not_or h
-    h_not_φ |> h_not_not_φ |> False.elim
+    h_not_φ |> h_not_not_φ |>.elim
 
 end SorryTheorems
 
