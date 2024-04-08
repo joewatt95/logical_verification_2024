@@ -486,7 +486,7 @@ def vecOfList {α : Type} :
 theorem length_listOfVec {α : Type} :
   ∀(n : ℕ) (v : Vec α n), List.length (listOfVec v) = n
   | _, Vec.nil      => by rfl
-  | _, Vec.cons a v =>
+  | _, Vec.cons _a v =>
     by simp [listOfVec, length_listOfVec _ v]
 
 end LoVe
