@@ -3,8 +3,6 @@ Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
 import LoVe.LoVe02_ProgramsAndTheorems_Demo
 
-import Mathlib.Data.Nat.Basic
-
 /- # LoVe Exercise 2: Programs and Theorems
 
 Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
