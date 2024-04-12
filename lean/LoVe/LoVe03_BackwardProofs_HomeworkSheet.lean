@@ -85,7 +85,7 @@ Hints:
 * You will need to apply the elimination rule for `False` at a key point in the
   proof. -/
 
-theorem herman {a : Prop} : ¬ ¬ (¬ ¬ a → a) :=
+theorem herman {a} : ¬ ¬ (¬ ¬ a → a) :=
   suffices ¬ ¬ (a ∨ ¬ a) from this |> not_not_implies dne_of_lem
   λ h : ¬ (a ∨ ¬ a) ↦
     have ⟨(h_not_a : ¬ a), (h_not_not_a : ¬ ¬ a)⟩ :=
