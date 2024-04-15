@@ -18,10 +18,7 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- ## Question 1 (4 points): Fokkink Logic Puzzles
-
-If you have studied Logic & Sets with Prof. Fokkink, you will know he is fond of
-logic puzzles. This question is a tribute.
+/- ## Question 1 (4 points): Logic Puzzles
 
 Consider the following tactical proof: -/
 
@@ -47,8 +44,8 @@ theorem about_Impl_term {a b} :
   | .inl h_not_a, h_a => h_a |> h_not_a |>.elim
   | .inr h_b, _ => h_b
 
-/- 1.2 (2 points). Prove the same Fokkink theorem again, this time by providing
-a structured proof, with `fix`, `assume`, and `show`. -/
+/- 1.2 (2 points). Prove the same theorem again, this time by providing a
+structured proof, with `fix`, `assume`, and `show`. -/
 
 theorem about_Impl_struct {a b} :
   ¬ a ∨ b → a → b :=
