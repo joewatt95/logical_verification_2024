@@ -1,5 +1,6 @@
 /- Copyright © 2018–2024 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
 Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
+import Mathlib.Algebra.Order.Group.Abs
 
 import LoVe.LoVelib
 
@@ -339,19 +340,19 @@ In other words, no matter how small we choose `ε`, we can always find a point i
 the sequence from which all following numbers deviate less than by `ε`. -/
 
 def IsCauchySeq (f : ℕ → ℚ) : Prop :=
-  ∀ε > 0, ∃N, ∀m ≥ N, abs (f N - f m) < ε
+  ∀ ε > 0, ∃N, ∀m ≥ N, abs (f N - f m) < ε
 
 /- Not every sequence is a Cauchy sequence: -/
 
 theorem id_Not_CauchySeq :
-  ¬ IsCauchySeq (fun n : ℕ ↦ (n : ℚ)) :=
+  ¬ IsCauchySeq (λ n : ℕ ↦ (n : ℚ)) :=
   by
     rw [IsCauchySeq]
     intro h
     cases h 1 zero_lt_one with
     | intro i hi =>
       have hi_succi :=
-        hi (i + 1) (by simp)
+        hi (i + 1) <| by simp
       simp [←sub_sub] at hi_succi
 
 /- We define a type of Cauchy sequences as a subtype: -/
@@ -415,25 +416,24 @@ instance Setoid : Setoid CauchySeq :=
 
 theorem Setoid_iff (f g : CauchySeq) :
   f ≈ g ↔
-  ∀ε > 0, ∃N, ∀m ≥ N, abs (seqOf f m - seqOf g m) < ε :=
+  ∀ ε > 0, ∃ N, ∀ m ≥ N, abs (seqOf f m - seqOf g m) < ε :=
   by rfl
 
 /- We can define constants such as `0` and `1` as a constant sequence. Any
 constant sequence is a Cauchy sequence: -/
 
 def const (q : ℚ) : CauchySeq :=
-  Subtype.mk (fun _ : ℕ ↦ q)
-    (by
+  Subtype.mk (λ _ : ℕ ↦ q) <|
+    by
        rw [IsCauchySeq]
        intro ε hε
-       aesop)
+       aesop
 
 /- Defining addition of real numbers requires a little more effort. We define
 addition on Cauchy sequences as pairwise addition: -/
 
-instance Add : Add CauchySeq :=
-  { add := fun f g : CauchySeq ↦
-      Subtype.mk (fun n : ℕ ↦ seqOf f n + seqOf g n) sorry }
+instance Add : Add CauchySeq where
+  add f g := Subtype.mk (λ n : ℕ ↦ seqOf f n + seqOf g n) sorry
 
 /- Above, we omit the proof that the addition of two Cauchy sequences is again
 a Cauchy sequence.
