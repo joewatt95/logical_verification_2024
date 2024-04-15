@@ -22,6 +22,8 @@ set_option auto.smt.solver.name "z3"
 set_option trace.auto.smt.printCommands true
 set_option trace.auto.smt.result true
 
+set_option auto.tptp true
+
 set_option autoImplicit false
 set_option tactic.hygienic false
 
@@ -67,9 +69,9 @@ theorem Nat.two_mul (n : ℕ) :
   (m < n → p) ↔ True :=
   by
     apply Iff.intro
-    { intro himp
+    { intro _himp
       apply True.intro }
-    { intro htrue
+    { intro _htrue
       intro hlt
       have hle : n ≤ m :=
         hge
@@ -147,39 +149,39 @@ theorem Nat.two_mul (n : ℕ) :
   A ⊆ B ↔ ∀a, a ∈ A → a ∈ B :=
   by rfl
 
-instance Set.PartialOrder {α : Type} : PartialOrder (Set α) :=
-  { le               := fun A B ↦ A ⊆ B,
-    lt               := fun A B ↦ A ⊆ B ∧ A ≠ B,
-    le_refl          :=
-      by
-        intro A a ha
-        assumption
-    le_trans         :=
-      by
-        intro A B C hAB hBC a ha
-        aesop,
-    lt_iff_le_not_le :=
-      by
-        intro A B
-        apply Iff.intro
-        { intro hAB
-          simp [LT.lt, LE.le] at *
-          cases hAB with
-          | intro hsseq hneq =>
-            apply And.intro
-            { assumption }
-            { intro hflip
-              apply hneq
-              apply Set.ext
-              aesop } }
-        { intro hAB
-          simp [LT.lt, LE.le] at *
-          aesop },
-    le_antisymm      :=
-      by
-        intro A B hAB hBA
-        apply Set.ext
+instance Set.PartialOrder {α : Type} : PartialOrder (Set α) where
+  le               := λ A B ↦ A ⊆ B
+  lt               := λ A B ↦ A ⊆ B ∧ A ≠ B
+  le_refl          :=
+    by
+      intro A a ha
+      assumption
+  le_trans         :=
+    by
+      intro A B C hAB hBC a ha
+      aesop
+  lt_iff_le_not_le :=
+    by
+      intro A B
+      apply Iff.intro
+      { intro hAB
+        simp [LT.lt, LE.le] at *
+        cases hAB with
+        | intro hsseq hneq =>
+          apply And.intro
+          { assumption }
+          { intro hflip
+            apply hneq
+            apply Set.ext
+            aesop } }
+      { intro hAB
+        simp [LT.lt, LE.le] at *
         aesop }
+  le_antisymm      :=
+    by
+      intro A B hAB hBA
+      apply Set.ext
+      aesop
 
 @[simp] theorem Set.le_def {α : Type} (A B : Set α) :
   A ≤ B ↔ A ⊆ B :=
@@ -197,7 +199,7 @@ inductive Set.Finite {α : Type} : Set α → Prop where
 /- ## Relations -/
 
 def Id {α : Type} : Set (α × α) :=
-  {ab | Prod.snd ab = Prod.fst ab}
+  {ab | ab.snd = ab.fst}
 
 @[simp] theorem mem_Id {α : Type} (a b : α) :
   (a, b) ∈ @Id α ↔ b = a :=
@@ -238,7 +240,7 @@ theorem trans {α : Type} {R : α → α → Prop} {a b c : α} (hab : RTC R a b
     induction hbc with
     | refl =>
       assumption
-    | tail c d hbc hcd hac =>
+    | tail c d _hbc hcd hac =>
       apply tail <;>
         assumption
 
@@ -253,7 +255,7 @@ theorem head {α : Type} {R : α → α → Prop} (a b c : α) (hab : R a b)
     induction hbc with
     | refl =>
       exact tail _ _ refl hab
-    | tail c d hbc hcd hac =>
+    | tail c d _hbc hcd hac =>
       apply tail <;>
         assumption
 
@@ -267,7 +269,7 @@ theorem head_induction_on {α : Type} {R : α → α → Prop} {b : α}
     induction h with
     | refl =>
       exact refl
-    | tail b' c _ hb'c ih =>
+    | tail b' c _hab hb'c ih =>
       apply ih (P := fun a hab' ↦ P a (RTC.tail _ _ hab' hb'c))
       { exact head _ _ hb'c _ refl }
       { intro x y hxy hyb' hy
@@ -279,14 +281,14 @@ theorem lift {α β : Type} {R : α → α → Prop} {S : β → β → Prop} {a
   by
     induction hab with
     | refl => apply refl
-    | tail b c hab hbc ih =>
+    | tail b c _hab hbc ih =>
       apply tail
       apply ih
       apply hf
       exact hbc
 
 theorem mono {α : Type} {R R' : α → α → Prop} {a b : α} :
-  (∀a b, R a b → R' a b) → RTC R a b → RTC R' a b :=
+  (∀ a b, R a b → R' a b) → RTC R a b → RTC R' a b :=
   lift id
 
 theorem RTC_RTC_eq {α : Type} {R : α → α → Prop} :
@@ -300,7 +302,7 @@ theorem RTC_RTC_eq {α : Type} {R : α → α → Prop} :
            by
              induction h with
              | refl => exact refl
-             | tail b c hab' hbc ih =>
+             | tail b c _hab' hbc ih =>
                apply trans <;>
                  assumption)
           (mono
@@ -318,13 +320,11 @@ attribute [simp] Setoid.refl
 /- ## Metaprogramming -/
 
 def cases (id : FVarId) : TacticM Unit :=
-  do
-    liftMetaTactic (fun goal ↦
-      do
-        let subgoals ← MVarId.cases goal id
-        pure (List.map (fun subgoal ↦
-            InductionSubgoal.mvarId (CasesSubgoal.toInductionSubgoal subgoal))
-          (Array.toList subgoals)))
+  liftMetaTactic λ goal ↦ do
+    let subgoals ← goal.cases id
+    return subgoals
+      |>.toList
+      |>.map λ subgoal ↦ subgoal.toInductionSubgoal.mvarId
 
 
 /- ## States -/
@@ -333,7 +333,7 @@ def State : Type :=
   String → ℕ
 
 def State.update (name : String) (val : ℕ) (s : State) : State :=
-  fun name' ↦ if name' = name then val else s name'
+  λ name' ↦ if name' = name then val else s name'
 
 macro s:term "[" name:term "↦" val:term "]" : term =>
   `(State.update $name $val $s)
@@ -407,13 +407,13 @@ private def decide (prop : Expr) : MetaM (Option (Sum Expr Expr)) := do
     let d := mkApp2 (.const ``Decidable.decide []) prop decInst
     let r ← whnfD d
     if r.isConstOf ``true then
-      let rflPrf ← mkEqRefl (.const ``true [])
+      let rflPrf ← mkEqRefl <| .const ``true []
       let prf := mkApp3 (Lean.mkConst ``of_decide_eq_true) prop decInst rflPrf
-      return some $ .inl prf
+      return some <| .inl prf
     else if r.isConstOf ``false then
-      let rflPrf ← mkEqRefl (.const ``false [])
+      let rflPrf ← mkEqRefl <| .const ``false []
       let prf := mkApp3 (Lean.mkConst ``of_decide_eq_false) prop decInst rflPrf
-      return some $ .inr prf
+      return some <| .inr prf
   return none
 
 

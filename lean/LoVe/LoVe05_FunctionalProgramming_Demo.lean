@@ -189,17 +189,16 @@ def pureGreen : RGB :=
     blue  := 0x00 }
 
 def semitransparentGreen : RGBA :=
-  { pureGreen with
-    alpha := 0x7f }
+  { pureGreen with alpha := 0x7f }
 
 #print pureRed
 #print pureGreen
 #print semitransparentGreen
 
-def shuffle (c : RGB) : RGB :=
-  { red   := RGB.green c
-    green := RGB.blue c
-    blue  := RGB.red c }
+def shuffle (c : RGB) : RGB where
+  red   := RGB.green c
+  green := RGB.blue c
+  blue  := RGB.red c
 
 /- Alternative definition using pattern matching: -/
 
@@ -223,14 +222,14 @@ Based on the type, Lean retrieves the relevant instance. -/
 instance Nat.Inhabited : Inhabited ℕ :=
   { default := 0 }
 
-instance List.Inhabited {α : Type} : Inhabited (List α) :=
-  { default := [] }
+instance List.Inhabited {α : Type} : Inhabited (List α) where
+  default := []
 
 #eval (Inhabited.default : ℕ)
 #eval (Inhabited.default : List Int)
 
 def head {α : Type} [Inhabited α] : List α → α
-  | []     => Inhabited.default
+  | []     => default
   | x :: _ => x
 
 theorem head_head {α : Type} [Inhabited α] (xs : List α) :
