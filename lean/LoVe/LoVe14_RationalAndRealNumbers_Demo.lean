@@ -340,25 +340,21 @@ In other words, no matter how small we choose `ε`, we can always find a point i
 the sequence from which all following numbers deviate less than by `ε`. -/
 
 def IsCauchySeq (f : ℕ → ℚ) : Prop :=
-  ∀ ε > 0, ∃N, ∀m ≥ N, abs (f N - f m) < ε
+  ∀ ε > 0, ∃ N, ∀ m ≥ N, abs (f N - f m) < ε
 
 /- Not every sequence is a Cauchy sequence: -/
 
 theorem id_Not_CauchySeq :
   ¬ IsCauchySeq (λ n : ℕ ↦ (n : ℚ)) :=
-  by
-    rw [IsCauchySeq]
-    intro h
-    cases h 1 zero_lt_one with
-    | intro i hi =>
-      have hi_succi :=
-        hi (i + 1) <| by simp
-      simp [←sub_sub] at hi_succi
+  λ h ↦
+  have ⟨i, hi⟩ := h 1 zero_lt_one
+  have hi_succi := hi (i + 1) <| by simp
+  by simp [←sub_sub] at hi_succi
 
 /- We define a type of Cauchy sequences as a subtype: -/
 
 def CauchySeq : Type :=
-  {f : ℕ → ℚ // IsCauchySeq f}
+  {f : ℕ → ℚ | IsCauchySeq f}
 
 def seqOf (f : CauchySeq) : ℕ → ℚ :=
   Subtype.val f
@@ -375,44 +371,30 @@ their difference converges to zero: -/
 
 namespace CauchySeq
 
-instance Setoid : Setoid CauchySeq :=
-{ r :=
-    fun f g : CauchySeq ↦
-      ∀ε > 0, ∃N, ∀m ≥ N, abs (seqOf f m - seqOf g m) < ε
-  iseqv :=
-    { refl :=
-        by
-          intro f ε hε
-          apply Exists.intro 0
-          aesop
-      symm :=
-        by
-          intro f g hfg ε hε
-          cases hfg ε hε with
-          | intro N hN =>
-            apply Exists.intro N
-            intro m hm
-            rw [abs_sub_comm]
-            apply hN m hm
-      trans :=
-        by
-          intro f g h hfg hgh ε hε
-          cases hfg (ε / 2) (half_pos hε) with
-          | intro N₁ hN₁ =>
-            cases hgh (ε / 2) (half_pos hε) with
-            | intro N₂ hN₂ =>
-              apply Exists.intro (max N₁ N₂)
-              intro m hm
-              calc
-                abs (seqOf f m - seqOf h m)
-                ≤ abs (seqOf f m - seqOf g m)
-                  + abs (seqOf g m - seqOf h m) :=
-                  by apply abs_sub_le
-              _ < ε / 2 + ε / 2 :=
-                add_lt_add (hN₁ m (le_of_max_le_left hm))
-                  (hN₂ m (le_of_max_le_right hm))
-              _ = ε :=
-                by simp } }
+instance Setoid : Setoid CauchySeq where
+  r f g := ∀ ε > 0, ∃ N, ∀ m ≥ N, abs (seqOf f m - seqOf g m) < ε
+
+  iseqv := {
+    refl := λ f ε hε ↦ ⟨0, by aesop⟩
+
+    symm := λ {f g} hfg ε hε ↦
+      let ⟨N, hN⟩ := hfg ε hε
+      suffices ∀ m ≥ N, |seqOf g m - seqOf f m| < ε from ⟨N, this⟩
+      λ m hm ↦ by rw [abs_sub_comm]; apply hN m hm
+
+    trans := λ {f g} h hfg hgh ε hε ↦
+      have ⟨N₁, hN₁⟩ := hfg (ε / 2) (half_pos hε)
+      have ⟨N₂, hN₂⟩ := hgh (ε / 2) (half_pos hε)
+      suffices _ from ⟨max N₁ N₂, this⟩
+      λ m hm ↦ calc
+        abs (seqOf f m - seqOf h m)
+        ≤ abs (seqOf f m - seqOf g m)
+          + abs (seqOf g m - seqOf h m) :=
+          by apply abs_sub_le
+      _ < ε / 2 + ε / 2 :=
+        add_lt_add (hN₁ m $ le_of_max_le_left hm) $ hN₂ m $ le_of_max_le_right hm
+      _ = ε := by simp
+  }
 
 theorem Setoid_iff (f g : CauchySeq) :
   f ≈ g ↔
@@ -423,11 +405,7 @@ theorem Setoid_iff (f g : CauchySeq) :
 constant sequence is a Cauchy sequence: -/
 
 def const (q : ℚ) : CauchySeq :=
-  Subtype.mk (λ _ : ℕ ↦ q) <|
-    by
-       rw [IsCauchySeq]
-       intro ε hε
-       aesop
+  Subtype.mk (λ _ : ℕ ↦ q) λ ε hε ↦ by aesop
 
 /- Defining addition of real numbers requires a little more effort. We define
 addition on Cauchy sequences as pairwise addition: -/
@@ -443,38 +421,28 @@ Next, we need to show that this addition is compatible with `≈`: -/
 theorem Setoid_add {f f' g g' : CauchySeq} (hf : f ≈ f')
     (hg : g ≈ g') :
   f + g ≈ f' + g' :=
-  by
-    intro ε₀ hε₀
-    simp [Setoid_iff]
-    cases hf (ε₀ / 2) (half_pos hε₀) with
-    | intro Nf hNf =>
-      cases hg (ε₀ / 2) (half_pos hε₀) with
-      | intro Ng hNg =>
-        apply Exists.intro (max Nf Ng)
-        intro m hm
-        calc
-          abs (seqOf (f + g) m - seqOf (f' + g') m)
-          = abs ((seqOf f m + seqOf g m)
-            - (seqOf f' m + seqOf g' m)) :=
-            by rfl
-          _ = abs ((seqOf f m - seqOf f' m)
-              + (seqOf g m - seqOf g' m)) :=
-            by
-              have arg_eq :
-                seqOf f m + seqOf g m
-                  - (seqOf f' m + seqOf g' m) =
-                seqOf f m - seqOf f' m
-                  + (seqOf g m - seqOf g' m) :=
-                by linarith
-              rw [arg_eq]
-          _ ≤ abs (seqOf f m - seqOf f' m)
-              + abs (seqOf g m - seqOf g' m) :=
-            by apply abs_add
-          _ < ε₀ / 2 + ε₀ / 2 :=
-            add_lt_add (hNf m (le_of_max_le_left hm))
-              (hNg m (le_of_max_le_right hm))
-          _ = ε₀ :=
-            by simp
+  λ ε₀ hε₀ ↦
+    have ⟨Nf, hNf⟩ := hf (ε₀ / 2) (half_pos hε₀)
+    have ⟨Ng, hNg⟩ := hg (ε₀ / 2) (half_pos hε₀)
+    suffices _ from ⟨max Nf Ng, this⟩
+    λ m hm ↦ calc
+      abs (seqOf (f + g) m - seqOf (f' + g') m)
+      = abs ((seqOf f m + seqOf g m)
+        - (seqOf f' m + seqOf g' m)) := by rfl
+      _ = abs ((seqOf f m - seqOf f' m)
+          + (seqOf g m - seqOf g' m)) := by
+          have arg_eq :
+            seqOf f m + seqOf g m
+              - (seqOf f' m + seqOf g' m) =
+            seqOf f m - seqOf f' m
+              + (seqOf g m - seqOf g' m) :=
+            by linarith
+          rw [arg_eq]
+      _ ≤ abs (seqOf f m - seqOf f' m)
+          + abs (seqOf g m - seqOf g' m) := by apply abs_add
+      _ < ε₀ / 2 + ε₀ / 2 :=
+        add_lt_add (hNf m $ le_of_max_le_left hm) $ hNg m $ le_of_max_le_right hm
+      _ = ε₀ := by simp
 
 end CauchySeq
 
@@ -485,18 +453,18 @@ def Real : Type :=
 
 namespace Real
 
-instance Zero : Zero Real :=
-  { zero := ⟦CauchySeq.const 0⟧ }
+instance Zero : Zero Real where
+  zero := ⟦CauchySeq.const 0⟧
 
-instance One : One Real :=
-  { one := ⟦CauchySeq.const 1⟧ }
+instance One : One Real where
+  one := ⟦CauchySeq.const 1⟧
 
-instance Add : Add Real :=
-{ add := Quotient.lift₂ (fun a b : CauchySeq ↦ ⟦a + b⟧)
-    (by
-       intro a b a' b' ha hb
-       apply Quotient.sound
-       exact CauchySeq.Setoid_add ha hb) }
+instance Add : Add Real where
+  add := Quotient.lift₂
+    (λ a b : CauchySeq ↦ ⟦a + b⟧)
+    λ a b a' b' ha hb ↦ by
+      apply Quotient.sound
+      exact CauchySeq.Setoid_add ha hb
 
 end Real
 
