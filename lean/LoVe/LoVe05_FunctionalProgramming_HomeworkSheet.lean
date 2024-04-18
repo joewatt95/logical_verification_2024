@@ -21,9 +21,9 @@ namespace LoVe
 
 Consider the following type of weighted binary trees: -/
 
-inductive HTree (α : Type)
-  | leaf  : ℕ → α → HTree α
-  | inner : ℕ → HTree α → HTree α → HTree α
+inductive HTree.{u} (α : Type u)
+  | leaf (weight : ℕ) (label : α)
+  | inner (weight : ℕ) (left : HTree α) (right : HTree α)
 
 /- Each constructor corresponds to a kind of node. An `HTree.leaf` node stores a
 numeric weight and a label of some type `α`, and an `HTree.inner` node stores a
@@ -33,16 +33,20 @@ numeric weight, a left subtree, and a right subtree.
 tree over some type variable `α` and that returns the weight component of the
 root node of the tree: -/
 
-def weight {α : Type} : HTree α → ℕ :=
-  sorry
+def weight {α} : HTree α → ℕ
+  | .leaf (weight := w) (label := _) => w
+  | .inner (weight := w) (left := left) (right := right) =>
+    w + weight left + weight right
 
 /- 1.2 (1 point). Define a polymorphic Lean function called `unite` that takes
 two trees `l, r : HTree α` and that returns a new tree such that (1) its left
 child is `l`; (2) its right child is `r`; and (3) its weight is the sum of the
 weights of `l` and `r`. -/
 
-def unite {α : Type} : HTree α → HTree α → HTree α :=
-  sorry
+def unite {α} (left : HTree α) (right : HTree α) : HTree α :=
+  .inner (weight := w) (left := left) (right := right)
+  where
+    w := weight left + weight right
 
 /- 1.3 (2 points). Consider the following `insort` function, which inserts a
 tree `u` in a list of trees that is sorted by increasing weight and which
@@ -55,9 +59,13 @@ def insort {α : Type} (u : HTree α) : List (HTree α) → List (HTree α)
 
 /- Prove that `insort`ing a tree into a list cannot yield the empty list: -/
 
-theorem insort_Neq_nil {α : Type} (t : HTree α) :
-  ∀ts : List (HTree α), insort t ts ≠ [] :=
-  sorry
+theorem insort_ne_nil {α : Type} (t : HTree α) :
+  ∀ {ts : List <| HTree α}, insort t ts ≠ []
+  | [] => by simp only [insort, ne_eq, not_false_eq_true]
+  | t' :: ts =>
+    match em (weight t ≤ weight t') with
+    | .inl h | .inr h =>
+      by simp only [insort, h, ↓reduceIte, ne_eq, not_false_eq_true]
 
 /- 1.4 (2 points). Prove the same property as above again, this time as a
 "paper" proof. Follow the guidelines given in question 1.4 of the exercise. -/
@@ -93,15 +101,28 @@ Hints:
 #check add_mul
 
 theorem sumUpToOfFun_eq :
-  ∀m : ℕ, 2 * sumUpToOfFun (fun i ↦ i) m = m * (m + 1) :=
-  sorry
+  ∀ {m}, 2 * sumUpToOfFun id m = m * (m + 1)
+  | 0 => rfl
+  | m + 1 => calc
+      2 * sumUpToOfFun id (m + 1)
+  _ = 2 * (sumUpToOfFun id m) + 2 * (m + 1) :=
+      by simp only [
+        sumUpToOfFun,Nat.add_eq, add_zero,
+        id_eq, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false
+      ]; ring
+  _ = m * (m + 1) + 2 * (m + 1) := by rw [sumUpToOfFun_eq]
+  _ = (m + 1) * (m + 2) := by ring
+
 
 /- 2.2 (2 points). Prove the following property of `sumUpToOfFun`. -/
 
-theorem sumUpToOfFun_mul (f g : ℕ → ℕ) :
-  ∀n : ℕ, sumUpToOfFun (fun i ↦ f i + g i) n =
-    sumUpToOfFun f n + sumUpToOfFun g n :=
-  sorry
+theorem sumUpToOfFun_mul {f g : ℕ → ℕ} :
+  ∀ {n}, sumUpToOfFun (λ i ↦ f i + g i) n =
+    sumUpToOfFun f n + sumUpToOfFun g n
+  | 0 => rfl
+  | n + 1 => by
+    simp only [sumUpToOfFun, Nat.add_eq, add_zero, sumUpToOfFun_mul]
+    linarith
 
 /- 2.3 (2 bonus points). Prove `sumUpToOfFun_mul` again as a "paper" proof.
 Follow the guidelines given in question 1.4 of the exercise. -/

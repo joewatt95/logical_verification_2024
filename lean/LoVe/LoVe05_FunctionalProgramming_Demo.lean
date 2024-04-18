@@ -242,7 +242,7 @@ theorem head_head {α : Type} [Inhabited α] (xs : List α) :
 
 instance Fun.Inhabited {α β : Type} [Inhabited β] :
   Inhabited (α → β) :=
-  { default := fun a : α ↦ Inhabited.default }
+  { default := λ _a : α ↦ Inhabited.default }
 
 instance Prod.Inhabited {α β : Type}
     [Inhabited α] [Inhabited β] :
@@ -345,7 +345,7 @@ def headOpt {α : Type} : List α → Option α
 
 def headPre {α : Type} : (xs : List α) → xs ≠ [] → α
   | [],     hxs => by simp at *
-  | x :: _, hxs => x
+  | x :: _, _hxs => x
 
 #eval headOpt [3, 1, 4]
 #eval headPre [3, 1, 4] (by simp)
@@ -359,7 +359,7 @@ def zip {α β : Type} : List α → List β → List (α × β)
 
 def length {α : Type} : List α → ℕ
   | []      => 0
-  | x :: xs => length xs + 1
+  | _x :: xs => length xs + 1
 
 #check List.length
 
@@ -399,13 +399,12 @@ theorem length_zip {α β : Type} (xs : List α) (ys : List β) :
       | nil        => rfl
       | cons y ys' => simp [zip, length, ih ys', min_add_add]
 
-theorem map_zip {α α' β β' : Type} (f : α → α')
-  (g : β → β') :
-  ∀xs ys,
-    map (fun ab : α × β ↦ (f (Prod.fst ab), g (Prod.snd ab)))
-      (zip xs ys) =
-    zip (map f xs) (map g ys)
-  | x :: xs, y :: ys => by simp [zip, map, map_zip f g xs ys]
+theorem map_zip {α α' β β'} {f : α → α'}
+  {g : β → β'} :
+  ∀ {xs ys},
+    (zip xs ys).map (λ (⟨a, b⟩ : α × β) ↦ (f a, g b)) =
+    zip (xs.map f) (ys.map g)
+  | x :: xs, y :: ys => by simp [zip, map, map_zip]
   | [],      _       => by rfl
   | _ :: _,  []      => by rfl
 
@@ -431,61 +430,61 @@ Recursive definitions (and proofs by induction) work roughly as for lists, but
 we may need to recurse (or invoke the induction hypothesis) on several child
 nodes. -/
 
-def mirror {α : Type} : Tree α → Tree α
-  | Tree.nil        => Tree.nil
-  | Tree.node a l r => Tree.node a (mirror r) (mirror l)
+def mirror {α} : Tree α → Tree α
+  | Tree.nil        => .nil
+  | Tree.node a l r => .node a (mirror r) (mirror l)
 
-theorem mirror_mirror {α : Type} (t : Tree α) :
+theorem mirror_mirror {α} (t : Tree α) :
   mirror (mirror t) = t :=
   by
     induction t with
     | nil                  => rfl
     | node a l r ih_l ih_r => simp [mirror, ih_l, ih_r]
 
-theorem mirror_mirror_calc {α : Type} :
-  ∀t : Tree α, mirror (mirror t) = t
-  | Tree.nil        => by rfl
-  | Tree.node a l r =>
+theorem mirror_mirror_calc {α} :
+  ∀ t : Tree α, mirror (mirror t) = t
+  | .nil        => by rfl
+  | .node a l r =>
     calc
-      mirror (mirror (Tree.node a l r))
-      = mirror (Tree.node a (mirror r) (mirror l)) :=
+      mirror (mirror (.node a l r))
+      = mirror (.node a (mirror r) (mirror l)) :=
         by rfl
-      _ = Tree.node a (mirror (mirror l))
+      _ = .node a (mirror (mirror l))
         (mirror (mirror r)) :=
         by rfl
-      _ = Tree.node a l (mirror (mirror r)) :=
+      _ = .node a l (mirror (mirror r)) :=
         by rw [mirror_mirror_calc l]
-      _ = Tree.node a l r :=
+      _ = .node a l r :=
         by rw [mirror_mirror_calc r]
 
 theorem mirror_Eq_nil_Iff {α : Type} :
-  ∀t : Tree α, mirror t = Tree.nil ↔ t = Tree.nil
-  | Tree.nil        => by simp [mirror]
-  | Tree.node _ _ _ => by simp [mirror]
+  ∀ t : Tree α, mirror t = .nil ↔ t = .nil
+  | .nil        => by simp [mirror]
+  | .node _ _ _ => by simp [mirror]
 
 
 /- ## Dependent Inductive Types (**optional**) -/
 
-inductive Vec (α : Type) : ℕ → Type where
+inductive Vec.{u} (α : Type u) : ℕ → Type u where
   | nil                                : Vec α 0
   | cons (a : α) {n : ℕ} (v : Vec α n) : Vec α (n + 1)
 
 #check Vec.nil
 #check Vec.cons
 
-def listOfVec {α : Type} : ∀{n : ℕ}, Vec α n → List α
+def listOfVec {α} : ∀ {n : ℕ}, Vec α n → List α
   | _, Vec.nil      => []
   | _, Vec.cons a v => a :: listOfVec v
 
-def vecOfList {α : Type} :
-  ∀xs : List α, Vec α (List.length xs)
-  | []      => Vec.nil
-  | x :: xs => Vec.cons x (vecOfList xs)
+def vecOfList {α} :
+  ∀ xs : List α, Vec α xs.length
+  | []      => .nil
+  | x :: xs => .cons x <| vecOfList xs
 
-theorem length_listOfVec {α : Type} :
-  ∀(n : ℕ) (v : Vec α n), List.length (listOfVec v) = n
+theorem length_listOfVec {α} :
+  ∀ (n : ℕ) (v : Vec α n), (listOfVec v).length = n
   | _, Vec.nil      => by rfl
   | _, Vec.cons _a v =>
-    by simp [listOfVec, length_listOfVec _ v]
+    by simp only [listOfVec, List.length_cons, length_listOfVec _ v]
 
 end LoVe

@@ -22,7 +22,7 @@ serves as the accumulator. This definition is __tail-recursive__, meaning that
 compilers and interpreters can easily optimize the recursion away, resulting in
 more efficient code. -/
 
-def reverseAccu {α : Type} : List α → List α → List α
+def reverseAccu {α} : List α → List α → List α
   | as, []      => as
   | as, x :: xs => reverseAccu (x :: as) xs
 
@@ -31,23 +31,31 @@ def reverseAccu {α : Type} : List α → List α → List α
 hypothesis is not strong enough. Start by proving the following generalization
 (using the `induction` tactic or pattern matching): -/
 
-theorem reverseAccu_Eq_reverse_append {α : Type} :
-  ∀as xs : List α, reverseAccu as xs = reverse xs ++ as :=
-  sorry
+theorem reverseAccu_eq_reverse_append {α} :
+  ∀ {as xs : List α}, reverseAccu as xs = reverse xs ++ as
+  | as, [] => rfl
+  | as, x :: xs =>
+    by simp only [
+      reverseAccu,
+      @reverseAccu_eq_reverse_append _ (x :: as) xs,
+      reverse,
+      List.append_assoc,
+      List.singleton_append
+    ]
 
 /- 1.2. Derive the desired equation. -/
 
-theorem reverseAccu_eq_reverse {α : Type} (xs : List α) :
-  reverseAccu [] xs = reverse xs :=
-  sorry
+theorem reverseAccu_eq_reverse {α} {xs : List α} :
+  reverseAccu [] xs = reverse xs := by
+  simp only [reverseAccu_eq_reverse_append, List.append_nil]
 
 /- 1.3. Prove the following property.
 
 Hint: A one-line inductionless proof is possible. -/
 
 theorem reverseAccu_reverseAccu {α : Type} (xs : List α) :
-  reverseAccu [] (reverseAccu [] xs) = xs :=
-  sorry
+  reverseAccu [] (reverseAccu [] xs) = xs := by
+  simp only [reverseAccu_eq_reverse, SorryTheorems.reverse_reverse]
 
 /- 1.4. Prove the following theorem by structural induction, as a "paper"
 proof. This is a good exercise to develop a deeper understanding of how
@@ -79,9 +87,9 @@ definition. -/
 
 The `drop` function removes the first `n` elements from the front of a list. -/
 
-def drop {α : Type} : ℕ → List α → List α
-  | 0,     xs      => xs
-  | _ + 1, []      => []
+def drop {α} : ℕ → List α → List α
+  | 0, xs => xs
+  | _, [] => []
   | m + 1, _ :: xs => drop m xs
 
 /- 2.1. Define the `take` function, which returns a list consisting of the first
@@ -90,8 +98,10 @@ def drop {α : Type} : ℕ → List α → List α
 To avoid unpleasant surprises in the proofs, we recommend that you follow the
 same recursion pattern as for `drop` above. -/
 
-def take {α : Type} : ℕ → List α → List α :=
-  sorry
+def take {α} : ℕ → List α → List α
+  | _, [] => []
+  | 0, _ => []
+  | n + 1, x :: xs => x :: take n xs
 
 #eval take 0 [3, 7, 11]   -- expected: []
 #eval take 1 [3, 7, 11]   -- expected: [3]
@@ -105,13 +115,13 @@ def take {α : Type} : ℕ → List α → List α :=
 Notice that they are registered as simplification rules thanks to the `@[simp]`
 attribute. -/
 
-@[simp] theorem drop_nil {α : Type} :
-  ∀n : ℕ, drop n ([] : List α) = [] :=
-  sorry
+@[simp] theorem drop_nil {α} :
+  ∀ {n}, drop n ([] : List α) = []
+  | 0 | _ + 1 => rfl
 
-@[simp] theorem take_nil {α : Type} :
-  ∀n : ℕ, take n ([] : List α) = [] :=
-  sorry
+@[simp] theorem take_nil {α} :
+  ∀ {n}, take n ([] : List α) = []
+  | 0 | _ + 1 => rfl
 
 /- 2.3. Follow the recursion pattern of `drop` and `take` to prove the
 following theorems. In other words, for each theorem, there should be three
@@ -120,18 +130,24 @@ cases, and the third case will need to invoke the induction hypothesis.
 Hint: Note that there are three variables in the `drop_drop` theorem (but only
 two arguments to `drop`). For the third case, `← add_assoc` might be useful. -/
 
-theorem drop_drop {α : Type} :
-  ∀(m n : ℕ) (xs : List α), drop n (drop m xs) = drop (n + m) xs
-  | 0,     n, xs      => by rfl
-  -- supply the two missing cases here
+theorem drop_drop {α} :
+  ∀ {m n} {xs : List α}, drop n (drop m xs) = drop (n + m) xs
+  | 0, _, _ => by simp only [drop, add_zero]
+  | _, _, [] => by simp only [drop_nil]
+  | _ + 1, _, _ :: _ => by simp only [drop, Nat.add_eq, add_zero, drop_drop]
 
-theorem take_take {α : Type} :
-  ∀(m : ℕ) (xs : List α), take m (take m xs) = take m xs :=
-  sorry
+theorem take_take {α} :
+  ∀ {m} {xs : List α}, take m (take m xs) = take m xs
+  | _ , [] => by simp only [take_nil]
+  | 0, _ :: _ => by simp only [take]
+  | _ + 1, _ :: _ => by simp only [take, Nat.add_eq, add_zero, take_take]
 
-theorem take_drop {α : Type} :
-  ∀(n : ℕ) (xs : List α), take n xs ++ drop n xs = xs :=
-  sorry
+theorem take_drop {α} :
+  ∀ {n} {xs : List α}, take n xs ++ drop n xs = xs
+  | 0, _ => by simp only [drop, List.append_left_eq_self]; unfold take; aesop
+  | _ + 1, [] => by simp only [take_nil, drop_nil, List.append_nil]
+  | _ + 1, _ :: _ =>
+    by simp only [take, Nat.add_eq, add_zero, drop, List.cons_append, take_drop]
 
 
 /- ## Question 3: A Type of Terms
@@ -144,16 +160,21 @@ theorem take_drop {α : Type} :
             |  `app` Term Term     -- application (e.g., `t u`) -/
 
 -- enter your definition here
+inductive Term
+  | var (var : String)
+  | lam (var : String) (body : Term)
+  | app (fn : Term) (arg : Term)
+  deriving Repr
 
 /- 3.2 (**optional**). Register a textual representation of the type `term` as
 an instance of the `Repr` type class. Make sure to supply enough parentheses to
 guarantee that the output is unambiguous. -/
 
-def Term.repr : Term → String
+-- def Term.repr : Term → String
 -- enter your answer here
 
-instance Term.Repr : Repr Term :=
-  { reprPrec := fun t prec ↦ Term.repr t }
+-- instance Term.Repr : Repr Term :=
+--   { reprPrec := fun t prec ↦ Term.repr t }
 
 /- 3.3 (**optional**). Test your textual representation. The following command
 should print something like `(λx. ((y x) x))`. -/
