@@ -107,8 +107,8 @@ theorem sumUpToOfFun_eq :
       2 * sumUpToOfFun id (m + 1)
   _ = 2 * (sumUpToOfFun id m) + 2 * (m + 1) :=
       by simp only [
-        sumUpToOfFun,Nat.add_eq, add_zero,
-        id_eq, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false
+        sumUpToOfFun,Nat.add_eq, add_zero, id_eq, mul_eq_mul_left_iff,
+        OfNat.ofNat_ne_zero, or_false
       ]; ring
   _ = m * (m + 1) + 2 * (m + 1) := by rw [sumUpToOfFun_eq]
   _ = (m + 1) * (m + 2) := by ring
