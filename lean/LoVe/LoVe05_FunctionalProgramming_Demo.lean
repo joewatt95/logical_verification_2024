@@ -299,8 +299,7 @@ theorem injection_example {α : Type} (x y : α) (xs ys : List α)
 
 theorem distinctness_example {α : Type} (y : α) (ys : List α)
     (h : [] = y :: ys) :
-  false :=
-  by cases h
+  false := nomatch h
 
 def map {α β : Type} (f : α → β) : List α → List β
   | []      => []
@@ -313,35 +312,32 @@ def mapArgs {α β : Type} : (α → β) → List α → List β
 #check List.map
 
 theorem map_ident {α : Type} (xs : List α) :
-  map (fun x ↦ x) xs = xs :=
-  by
-    induction xs with
-    | nil           => rfl
-    | cons x xs' ih => simp [map, ih]
+  map (λ x ↦ x) xs = xs := by
+  induction xs with
+  | nil           => rfl
+  | cons x xs' ih => simp [map, ih]
 
 theorem map_comp {α β γ : Type} (f : α → β) (g : β → γ)
     (xs : List α) :
-  map g (map f xs) = map (fun x ↦ g (f x)) xs :=
-  by
-    induction xs with
-    | nil           => rfl
-    | cons x xs' ih => simp [map, ih]
+  map g (map f xs) = map (λ x ↦ g (f x)) xs := by
+  induction xs with
+  | nil           => rfl
+  | cons x xs' ih => simp [map, ih]
 
 theorem map_append {α β : Type} (f : α → β)
     (xs ys : List α) :
-  map f (xs ++ ys) = map f xs ++ map f ys :=
-  by
-    induction xs with
-    | nil           => rfl
-    | cons x xs' ih => simp [map, ih]
+  map f (xs ++ ys) = map f xs ++ map f ys := by
+  induction xs with
+  | nil           => rfl
+  | cons x xs' ih => simp [map, ih]
 
 def tail {α : Type} : List α → List α
   | []      => []
   | _ :: xs => xs
 
 def headOpt {α : Type} : List α → Option α
-  | []     => Option.none
-  | x :: _ => Option.some x
+  | []     => .none
+  | x :: _ => .some x
 
 def headPre {α : Type} : (xs : List α) → xs ≠ [] → α
   | [],     hxs => by simp at *
@@ -379,8 +375,8 @@ theorem min_add_add (l m n : ℕ) :
 theorem min_add_add_match (l m n : ℕ) :
   min (m + l) (n + l) = min m n + l :=
   match Classical.em (m ≤ n) with
-  | Or.inl h => by simp [min, h]
-  | Or.inr h => by simp [min, h]
+  | .inl h => by simp [min, h]
+  | .inr h => by simp [min, h]
 
 theorem min_add_add_if (l m n : ℕ) :
   min (m + l) (n + l) = min m n + l :=
@@ -435,27 +431,25 @@ def mirror {α} : Tree α → Tree α
   | Tree.node a l r => .node a (mirror r) (mirror l)
 
 theorem mirror_mirror {α} (t : Tree α) :
-  mirror (mirror t) = t :=
-  by
-    induction t with
-    | nil                  => rfl
-    | node a l r ih_l ih_r => simp [mirror, ih_l, ih_r]
+  mirror (mirror t) = t := by
+  induction t with
+  | nil                  => rfl
+  | node a l r ih_l ih_r => simp [mirror, ih_l, ih_r]
 
 theorem mirror_mirror_calc {α} :
   ∀ t : Tree α, mirror (mirror t) = t
   | .nil        => by rfl
-  | .node a l r =>
-    calc
-      mirror (mirror (.node a l r))
-      = mirror (.node a (mirror r) (mirror l)) :=
-        by rfl
-      _ = .node a (mirror (mirror l))
-        (mirror (mirror r)) :=
-        by rfl
-      _ = .node a l (mirror (mirror r)) :=
-        by rw [mirror_mirror_calc l]
-      _ = .node a l r :=
-        by rw [mirror_mirror_calc r]
+  | .node a l r => calc
+    mirror (mirror (.node a l r))
+    = mirror (.node a (mirror r) (mirror l)) :=
+      by rfl
+    _ = .node a (mirror (mirror l))
+      (mirror (mirror r)) :=
+      by rfl
+    _ = .node a l (mirror (mirror r)) :=
+      by rw [mirror_mirror_calc l]
+    _ = .node a l r :=
+      by rw [mirror_mirror_calc r]
 
 theorem mirror_Eq_nil_Iff {α : Type} :
   ∀ t : Tree α, mirror t = .nil ↔ t = .nil
@@ -473,8 +467,8 @@ inductive Vec.{u} (α : Type u) : ℕ → Type u where
 #check Vec.cons
 
 def listOfVec {α} : ∀ {n : ℕ}, Vec α n → List α
-  | _, Vec.nil      => []
-  | _, Vec.cons a v => a :: listOfVec v
+  | _, .nil      => []
+  | _, .cons a v => a :: listOfVec v
 
 def vecOfList {α} :
   ∀ xs : List α, Vec α xs.length

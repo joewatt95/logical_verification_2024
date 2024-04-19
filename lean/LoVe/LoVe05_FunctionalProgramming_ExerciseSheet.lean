@@ -33,11 +33,11 @@ hypothesis is not strong enough. Start by proving the following generalization
 
 theorem reverseAccu_eq_reverse_append {α} :
   ∀ {as xs : List α}, reverseAccu as xs = reverse xs ++ as
-  | as, [] => rfl
-  | as, x :: xs =>
+  | _, [] => rfl
+  | _, _ :: _ =>
     by simp only [
       reverseAccu,
-      @reverseAccu_eq_reverse_append _ (x :: as) xs,
+      reverseAccu_eq_reverse_append,
       reverse,
       List.append_assoc,
       List.singleton_append
@@ -147,7 +147,9 @@ theorem take_drop {α} :
   | 0, _ => by simp only [drop, List.append_left_eq_self]; unfold take; aesop
   | _ + 1, [] => by simp only [take_nil, drop_nil, List.append_nil]
   | _ + 1, _ :: _ =>
-    by simp only [take, Nat.add_eq, add_zero, drop, List.cons_append, take_drop]
+    by simp only [
+      take, Nat.add_eq, add_zero, drop, List.cons_append, take_drop
+    ]
 
 
 /- ## Question 3: A Type of Terms

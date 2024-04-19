@@ -38,7 +38,7 @@ In Lean, we can define the corresponding "is even" predicate as follows: -/
 
 inductive Even : ℕ → Prop where
   | zero    : Even 0
-  | add_two : ∀k : ℕ, Even k → Even (k + 2)
+  | add_two : ∀ k, Even k → Even (k + 2)
 
 /- This should look familiar. We have used the same syntax, except with `Type`
 instead of `Prop`, for inductive types.
@@ -103,17 +103,17 @@ inductive Score : Type where
 infixr:50 " – " => Score.vs
 
 inductive Step : Score → Score → Prop where
-  | serv_0_15     : ∀n, Step (0–n) (15–n)
-  | serv_15_30    : ∀n, Step (15–n) (30–n)
-  | serv_30_40    : ∀n, Step (30–n) (40–n)
-  | serv_40_game  : ∀n, n < 40 → Step (40–n) Score.gameServ
+  | serv_0_15     : ∀ n, Step (0–n) (15–n)
+  | serv_15_30    : ∀ n, Step (15–n) (30–n)
+  | serv_30_40    : ∀ n, Step (30–n) (40–n)
+  | serv_40_game  : ∀ n, n < 40 → Step (40–n) Score.gameServ
   | serv_40_adv   : Step (40–40) Score.advServ
   | serv_adv_40   : Step Score.advServ (40–40)
   | serv_adv_game : Step Score.advServ Score.gameServ
-  | recv_0_15     : ∀n, Step (n–0) (n–15)
-  | recv_15_30    : ∀n, Step (n–15) (n–30)
-  | recv_30_40    : ∀n, Step (n–30) (n–40)
-  | recv_40_game  : ∀n, n < 40 → Step (n–40) Score.gameRecv
+  | recv_0_15     : ∀ n, Step (n–0) (n–15)
+  | recv_15_30    : ∀ n, Step (n–15) (n–30)
+  | recv_30_40    : ∀ n, Step (n–30) (n–40)
+  | recv_40_game  : ∀ n, n < 40 → Step (n–40) Score.gameRecv
   | recv_40_adv   : Step (40–40) Score.advRecv
   | recv_adv_40   : Step Score.advRecv (40–40)
   | recv_adv_game : Step Score.advRecv Score.gameRecv
@@ -128,10 +128,9 @@ We can ask, and formally answer, questions such as: Can the score ever return to
 `0–0`? -/
 
 theorem no_Step_to_0_0 (s : Score) :
-  ¬ s ↝ 0–0 :=
-  by
-    intro h
-    cases h
+  ¬ s ↝ 0–0 := by
+  intro h
+  cases h
 
 
 /- ### Reflexive Transitive Closure
@@ -139,7 +138,7 @@ theorem no_Step_to_0_0 (s : Score) :
 Our last introductory example is the reflexive transitive closure of a
 relation `R`, modeled as a binary predicate `Star R`. -/
 
-inductive Star {α : Type} (R : α → α → Prop) : α → α → Prop
+inductive Star {α} (R : α → α → Prop) : α → α → Prop
 where
   | base (a b : α)    : R a b → Star R a b
   | refl (a : α)      : Star R a a
@@ -151,9 +150,9 @@ reflexive closure. The third rule achieves the transitive closure.
 The definition is truly elegant. If you doubt this, try implementing `Star` as a
 recursive function: -/
 
-def starRec {α : Type} (R : α → α → Bool) :
-  α → α → Bool :=
-  sorry
+def starRec {α} (R : α → α → Bool) :
+  α → α → Prop
+  | a, a' => a = a' ∨ ∃ b, R a b ∧ R b a'
 
 
 /- ### A Nonexample
@@ -175,7 +174,7 @@ propositions or predicates. In contrast, `∀` and `→` are built into the logi
 
 Syntactic sugar:
 
-    `∃x : α, P` := `Exists (λx : α, P)`
+    `∃ x : α, P` := `Exists (λ x : α, P)`
     `x = y`     := `Eq x y` -/
 
 namespace logical_symbols
@@ -190,8 +189,8 @@ inductive Or (a b : Prop) : Prop where
 inductive Iff (a b : Prop) : Prop where
   | intro : (a → b) → (b → a) → Iff a b
 
-inductive Exists {α : Type} (P : α → Prop) : Prop where
-  | intro : ∀a : α, P a → Exists P
+inductive Exists {α} (P : α → Prop) : Prop where
+  | intro : ∀ a : α, P a → Exists P
 
 inductive True : Prop where
   | intro : True
@@ -222,26 +221,24 @@ rules (i.e., the constructors of the proof term). Thanks to the PAT principle,
 this works as expected. -/
 
 theorem mod_two_Eq_zero_of_Even (n : ℕ) (h : Even n) :
-  n % 2 = 0 :=
-  by
-    induction h with
-    | zero            => rfl
-    | add_two k hk ih => simp [ih]
+  n % 2 = 0 := by
+  induction h with
+  | zero            => rfl
+  | add_two k _hk ih => simp [ih]
 
 theorem Not_Even_two_mul_add_one (m n : ℕ)
     (hm : m = 2 * n + 1) :
-  ¬ Even m :=
-  by
-    intro h
-    induction h generalizing n with
-    | zero            => linarith
-    | add_two k hk ih =>
-      apply ih (n - 1)
-      cases n with
-      | zero    => simp [Nat.ctor_eq_zero] at *
-      | succ n' =>
-        simp [Nat.succ_eq_add_one] at *
-        linarith
+  ¬ Even m := by
+  intro h
+  induction h generalizing n with
+  | zero            => linarith
+  | add_two k _hk ih =>
+    apply ih (n - 1)
+    cases n with
+    | zero    => simp [Nat.ctor_eq_zero] at *
+    | succ n' =>
+      simp [Nat.succ_eq_add_one] at *
+      linarith
 
 /- `linarith` proves goals involving linear arithmetic equalities or
 inequalities. "Linear" means it works only with `+` and `-`, not `*` and `/`
@@ -253,31 +250,29 @@ theorem linarith_example (i : Int) (hi : i > 5) :
 
 theorem Star_Star_Iff_Star {α : Type} (R : α → α → Prop)
     (a b : α) :
-  Star (Star R) a b ↔ Star R a b :=
-  by
-    apply Iff.intro
-    { intro h
-      induction h with
-      | base a b hab                  => exact hab
-      | refl a                        => apply Star.refl
-      | trans a b c hab hbc ihab ihbc =>
-        apply Star.trans a b
-        { exact ihab }
-        { exact ihbc } }
-    { intro h
-      apply Star.base
-      exact h }
+  Star (Star R) a b ↔ Star R a b := by
+  apply Iff.intro
+  { intro h
+    induction h with
+    | base _a _b hab                  => exact hab
+    | refl a                        => apply Star.refl
+    | trans a b c _hab _hbc ihab ihbc =>
+      apply Star.trans a b
+      { exact ihab }
+      { exact ihbc } }
+  { intro h
+    apply Star.base
+    exact h }
 
 @[simp] theorem Star_Star_Eq_Star {α : Type}
     (R : α → α → Prop) :
-  Star (Star R) = Star R :=
-  by
-    apply funext
-    intro a
-    apply funext
-    intro b
-    apply propext
-    apply Star_Star_Iff_Star
+  Star (Star R) = Star R := by
+  apply funext
+  intro a
+  apply funext
+  intro b
+  apply propext
+  apply Star_Star_Iff_Star
 
 #check funext
 #check propext
@@ -286,7 +281,7 @@ theorem Star_Star_Iff_Star {α : Type} (R : α → α → Prop)
 /- ## Elimination
 
 Given an inductive predicate `P`, its introduction rules typically have the form
-`∀…, ⋯ → P …` and can be used to prove goals of the form `⊢ P …`.
+`∀ …, ⋯ → P …` and can be used to prove goals of the form `⊢ P …`.
 
 Elimination works the other way around: It extracts information from a theorem
 or hypothesis of the form `P …`. Elimination takes various forms: pattern
@@ -302,10 +297,9 @@ Now we can finally understand how `cases h` where `h : l = r` and how
 
 #print Eq
 
-theorem cases_Eq_example {α : Type} (l r : α) (h : l = r)
+theorem cases_eq_example {α} (l r) (h : l = r)
     (P : α → α → Prop) :
-  P l r :=
-  by
+  P l r := by
     cases h
     sorry
 
@@ -314,8 +308,7 @@ theorem cases_Eq_example {α : Type} (l r : α) (h : l = r)
 
 theorem cases_Classical_em_example {α : Type} (a : α)
     (P Q : α → Prop) :
-  Q a :=
-  by
+  Q a := by
     have hor : P a ∨ ¬ P a :=
       Classical.em (P a)
     cases hor with
@@ -328,33 +321,32 @@ __inversion rule__ to support such eliminative reasoning.
 
 Typical inversion rule:
 
-    `∀x y, P (c x y) → (∃…, ⋯ ∧ ⋯) ∨ ⋯ ∨ (∃…, ⋯ ∧ ⋯)`
+    `∀ x y, P (c x y) → (∃…, ⋯ ∧ ⋯) ∨ ⋯ ∨ (∃…, ⋯ ∧ ⋯)`
 
 It can be useful to combine introduction and elimination into a single theorem,
 which can be used for rewriting both the hypotheses and conclusions of goals:
 
-    `∀x y, P (c x y) ↔ (∃…, ⋯ ∧ ⋯) ∨ ⋯ ∨ (∃…, ⋯ ∧ ⋯)` -/
+    `∀ x y, P (c x y) ↔ (∃…, ⋯ ∧ ⋯) ∨ ⋯ ∨ (∃…, ⋯ ∧ ⋯)` -/
 
 theorem Even_Iff (n : ℕ) :
-  Even n ↔ n = 0 ∨ (∃m : ℕ, n = m + 2 ∧ Even m) :=
-  by
-    apply Iff.intro
-    { intro hn
-      cases hn with
-      | zero         => simp
-      | add_two k hk =>
-        apply Or.inr
-        apply Exists.intro k
-        simp [hk] }
-    { intro hor
-      cases hor with
-      | inl heq => simp [heq, Even.zero]
-      | inr hex =>
-        cases hex with
-        | intro k hand =>
-          cases hand with
-          | intro heq hk =>
-            simp [heq, Even.add_two _ hk] }
+  Even n ↔ n = 0 ∨ (∃m : ℕ, n = m + 2 ∧ Even m) := by
+  apply Iff.intro
+  { intro hn
+    cases hn with
+    | zero         => simp
+    | add_two k hk =>
+      apply Or.inr
+      apply Exists.intro k
+      simp [hk] }
+  { intro hor
+    cases hor with
+    | inl heq => simp [heq, Even.zero]
+    | inr hex =>
+      cases hex with
+      | intro k hand =>
+        cases hand with
+        | intro heq hk =>
+          simp [heq, Even.add_two _ hk] }
 
 theorem Even_Iff_struct (n : ℕ) :
   Even n ↔ n = 0 ∨ (∃m : ℕ, n = m + 2 ∧ Even m) :=
@@ -401,11 +393,10 @@ theorem Sorted_2 :
   Sorted.single _
 
 theorem Sorted_3_5 :
-  Sorted [3, 5] :=
-  by
-    apply Sorted.two_or_more
-    { simp }
-    { exact Sorted.single _ }
+  Sorted [3, 5] := by
+  apply Sorted.two_or_more
+  { simp }
+  { exact Sorted.single _ }
 
 theorem Sorted_3_5_raw :
   Sorted [3, 5] :=
@@ -474,7 +465,7 @@ inductive IsFull {α : Type} : Tree α → Prop where
       (hiff : l = Tree.nil ↔ r = Tree.nil) :
     IsFull (Tree.node a l r)
 
-theorem IsFull_singleton {α : Type} (a : α) :
+theorem IsFull_singleton {α} (a : α) :
   IsFull (Tree.node a Tree.nil Tree.nil) :=
   by
     apply IsFull.node
@@ -482,7 +473,7 @@ theorem IsFull_singleton {α : Type} (a : α) :
     { exact IsFull.nil }
     { rfl }
 
-theorem IsFull_mirror {α : Type} (t : Tree α)
+theorem IsFull_mirror {α} (t : Tree α)
     (ht : IsFull t) :
   IsFull (mirror t) :=
   by
@@ -495,22 +486,21 @@ theorem IsFull_mirror {α : Type} (t : Tree α)
         { exact ih_l }
         { simp [mirror_Eq_nil_Iff, *] } }
 
-theorem IsFull_mirror_struct_induct {α : Type} (t : Tree α) :
-  IsFull t → IsFull (mirror t) :=
-  by
-    induction t with
-    | nil                  =>
-      { intro ht
-        exact ht }
-    | node a l r ih_l ih_r =>
-      { intro ht
-        cases ht with
-        | node _ _ _ hl hr hiff =>
-          { rw [mirror]
-            apply IsFull.node
-            { exact ih_r hr }
-            { apply ih_l hl }
-            { simp [mirror_Eq_nil_Iff, *] } } }
+theorem IsFull_mirror_struct_induct {α} (t : Tree α) :
+  IsFull t → IsFull (mirror t) := by
+  induction t with
+  | nil                  =>
+    { intro ht
+      exact ht }
+  | node a l r ih_l ih_r =>
+    { intro ht
+      cases ht with
+      | node _ _ _ hl hr hiff =>
+        { rw [mirror]
+          apply IsFull.node
+          { exact ih_r hr }
+          { apply ih_l hl }
+          { simp [mirror_Eq_nil_Iff, *] } } }
 
 
 /- ### First-Order Terms -/

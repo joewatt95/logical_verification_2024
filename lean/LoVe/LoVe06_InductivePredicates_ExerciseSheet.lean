@@ -32,8 +32,7 @@ Hint: `cases` or `induction` is useful to reason about hypotheses of the form
 `Even …`. -/
 
 @[simp] theorem Odd_1 :
-  Odd 1 :=
-  sorry
+  Odd 1 := (nomatch .)
 
 /- 1.2. Prove that 3 and 5 are odd. -/
 
@@ -42,10 +41,11 @@ Hint: `cases` or `induction` is useful to reason about hypotheses of the form
 /- 1.3. Complete the following proof by structural induction. -/
 
 theorem Even_two_times :
-  ∀m : ℕ, Even (2 * m)
-  | 0     => Even.zero
+  ∀ m, Even <| 2 * m
+  | 0     => .zero
   | m + 1 =>
-    sorry
+    have : Even <| 2 * m := Even_two_times _
+    show Even <| 2 * (m + 1) from Even.add_two _ this
 
 
 /- ## Question 2: Tennis Games
@@ -62,7 +62,7 @@ inductive ServAhead : Score → Prop
 
 /- 2.2. Validate your predicate definition by proving the following theorems. -/
 
-theorem ServAhead_vs {m n : ℕ} (hgt : m > n) :
+theorem ServAhead_vs {m n} (hgt : m > n) :
   ServAhead (Score.vs m n) :=
   sorry
 
