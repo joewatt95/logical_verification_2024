@@ -79,7 +79,7 @@ theorem insort_ne_nil {α : Type} (t : HTree α) :
 
 def sumUpToOfFun (f : ℕ → ℕ) : ℕ → ℕ
   | 0     => f 0
-  | m + 1 => sumUpToOfFun f m + f (m + 1)
+  | n + 1 => sumUpToOfFun f n + f (n + 1)
 
 /- 2.1 (2 points). Prove the following theorem, discovered by Carl Friedrich
 Gauss as a pupil.
@@ -101,17 +101,13 @@ Hints:
 #check add_mul
 
 theorem sumUpToOfFun_eq :
-  ∀ {m}, 2 * sumUpToOfFun id m = m * (m + 1)
+  ∀ {n}, 2 * sumUpToOfFun id n = n * (n + 1)
   | 0 => rfl
-  | m + 1 => calc
-      2 * sumUpToOfFun id (m + 1)
-  _ = 2 * (sumUpToOfFun id m) + 2 * (m + 1) :=
-      by simp only [
-        sumUpToOfFun,Nat.add_eq, add_zero, id_eq, mul_eq_mul_left_iff,
-        OfNat.ofNat_ne_zero, or_false
-      ]; ring
-  _ = m * (m + 1) + 2 * (m + 1) := by rw [sumUpToOfFun_eq]
-  _ = (m + 1) * (m + 2) := by ring
+  | n + 1 =>
+    have : 2 * sumUpToOfFun id n = n * (n + 1) := sumUpToOfFun_eq
+    by
+      simp only [sumUpToOfFun, Nat.add_eq, add_zero, id_eq]
+      linarith
 
 
 /- 2.2 (2 points). Prove the following property of `sumUpToOfFun`. -/
