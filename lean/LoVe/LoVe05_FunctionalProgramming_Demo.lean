@@ -269,20 +269,17 @@ produce induction hypotheses. Here is a contrived example: -/
 
 theorem head_head_cases {α : Type} [Inhabited α]
     (xs : List α) :
-  head [head xs] = head xs :=
-  by
-    cases xs with
-    | nil        => rfl
-    | cons x xs' => rfl
+  head [head xs] = head xs := by
+  cases xs with
+  | nil | cons x xs' => rfl
 
 /- `match` is the structured equivalent: -/
 
 theorem head_head_match {α : Type} [Inhabited α]
-    (xs : List α) :
+  (xs : List α) :
   head [head xs] = head xs :=
   match xs with
-  | List.nil        => by rfl
-  | List.cons x xs' => by rfl
+  | .nil | .cons _ _ => rfl
 
 /- `cases` can also be used on a hypothesis of the form `l = r`. It matches `r`
 against `l` and replaces all occurrences of the variables occurring in `r` with
@@ -290,10 +287,9 @@ the corresponding terms in `l` everywhere in the goal. -/
 
 theorem injection_example {α : Type} (x y : α) (xs ys : List α)
     (h : x :: xs = y :: ys) :
-  x = y ∧ xs = ys :=
-  by
-    cases h
-    simp
+  x = y ∧ xs = ys := by
+  cases h
+  simp
 
 /- If `r` fails to match `l`, no subgoals emerge; the proof is complete. -/
 
