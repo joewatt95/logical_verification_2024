@@ -362,11 +362,10 @@ is true and one in which it is false. -/
 #check Classical.em
 
 theorem min_add_add (l m n : ℕ) :
-  min (m + l) (n + l) = min m n + l :=
-  by
-    cases Classical.em (m ≤ n) with
-    | inl h => simp [min, h]
-    | inr h => simp [min, h]
+  min (m + l) (n + l) = min m n + l := by
+  cases Classical.em (m ≤ n) with
+  | inl h => simp [min, h]
+  | inr h => simp [min, h]
 
 theorem min_add_add_match (l m n : ℕ) :
   min (m + l) (n + l) = min m n + l :=
@@ -376,10 +375,10 @@ theorem min_add_add_match (l m n : ℕ) :
 
 theorem min_add_add_if (l m n : ℕ) :
   min (m + l) (n + l) = min m n + l :=
-  if h : m ≤ n then
-    by simp [min, h]
-  else
-    by simp [min, h]
+  if h : m ≤ n then by
+    simp [min, h]
+  else by
+    simp [min, h]
 
 theorem length_zip {α β : Type} (xs : List α) (ys : List β) :
   length (zip xs ys) = min (length xs) (length ys) :=
@@ -437,15 +436,11 @@ theorem mirror_mirror_calc {α} :
   | .nil        => by rfl
   | .node a l r => calc
     mirror (mirror (.node a l r))
-    = mirror (.node a (mirror r) (mirror l)) :=
-      by rfl
+    = mirror (.node a (mirror r) (mirror l)) := by rfl
     _ = .node a (mirror (mirror l))
-      (mirror (mirror r)) :=
-      by rfl
-    _ = .node a l (mirror (mirror r)) :=
-      by rw [mirror_mirror_calc l]
-    _ = .node a l r :=
-      by rw [mirror_mirror_calc r]
+      (mirror (mirror r)) := by rfl
+    _ = .node a l (mirror (mirror r)) := by rw [mirror_mirror_calc l]
+    _ = .node a l r := by rw [mirror_mirror_calc r]
 
 theorem mirror_Eq_nil_Iff {α : Type} :
   ∀ t : Tree α, mirror t = .nil ↔ t = .nil

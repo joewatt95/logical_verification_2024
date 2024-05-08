@@ -24,6 +24,7 @@ Consider the following type of weighted binary trees: -/
 inductive HTree.{u} (α : Type u)
   | leaf (weight : ℕ) (label : α)
   | inner (weight : ℕ) (left : HTree α) (right : HTree α)
+  deriving Repr
 
 /- Each constructor corresponds to a kind of node. An `HTree.leaf` node stores a
 numeric weight and a label of some type `α`, and an `HTree.inner` node stores a
@@ -63,9 +64,9 @@ theorem insort_ne_nil {α : Type} (t : HTree α) :
   ∀ {ts : List <| HTree α}, insort t ts ≠ []
   | [] => by simp only [insort, ne_eq, not_false_eq_true]
   | t' :: ts =>
-    match em (weight t ≤ weight t') with
-    | .inl h | .inr h =>
-      by simp only [insort, h, ↓reduceIte, ne_eq, not_false_eq_true]
+    match em <| weight t ≤ weight t' with
+    | .inl h | .inr h => by
+      simp only [insort, h, ↓reduceIte, ne_eq, not_false_eq_true]
 
 /- 1.4 (2 points). Prove the same property as above again, this time as a
 "paper" proof. Follow the guidelines given in question 1.4 of the exercise. -/
@@ -113,8 +114,7 @@ theorem sumUpToOfFun_eq :
 /- 2.2 (2 points). Prove the following property of `sumUpToOfFun`. -/
 
 theorem sumUpToOfFun_mul {f g : ℕ → ℕ} :
-  ∀ {n}, sumUpToOfFun (λ i ↦ f i + g i) n =
-    sumUpToOfFun f n + sumUpToOfFun g n
+  ∀ {n}, sumUpToOfFun (λ i ↦ f i + g i) n = sumUpToOfFun f n + sumUpToOfFun g n
   | 0 => rfl
   | n + 1 => by
     simp only [sumUpToOfFun, Nat.add_eq, add_zero, sumUpToOfFun_mul]
