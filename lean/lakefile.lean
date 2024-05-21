@@ -19,11 +19,10 @@ require mathlib from git
 
 require auto from git
   "https://github.com/leanprover-community/lean-auto"
-    @ "a8ad757346819d367607f5eac27451789364348b"
+    @ "664c8f272a9f5552fd1bac68644e0d3b19c9438e"
 
 require Duper from git
-  "https://github.com/leanprover-community/duper"
-    @ "98cc99fc30243e2a73c0044377479c1a46ff56a4"
+  "https://github.com/leanprover-community/duper" @ "v0.0.11"
 
 require LeanCopilot from git
   "https://github.com/lean-dojo/LeanCopilot" @ "v1.2.0"
