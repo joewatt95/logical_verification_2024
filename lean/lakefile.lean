@@ -19,7 +19,7 @@ require mathlib from git
 
 require auto from git
   "https://github.com/leanprover-community/lean-auto"
-    @ "664c8f272a9f5552fd1bac68644e0d3b19c9438e"
+    @ "3a2c4c94bf14a8596ff98e81f608d0886f4b559a"
 
 require Duper from git
   "https://github.com/leanprover-community/duper" @ "v0.0.11"
