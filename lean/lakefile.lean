@@ -4,8 +4,8 @@ open Lake DSL
 
 package love where
   moreLinkArgs := #[
-    "-L./.lake/packages/LeanCopilot/.lake/build/lib",
-    "-lctranslate2"
+    "-L./.lake/packages/LeanCopilot/.lake/build/lib"
+    -- "-lctranslate2"
   ]
 
 @[default_target]
@@ -28,8 +28,8 @@ require egg from git
   "https://github.com/marcusrossel/lean-egg"
     @ "5715f55d754b32f57fa32bf3187ca270caccebb3"
 
-require LeanCopilot from git
-  "https://github.com/lean-dojo/LeanCopilot" @ "v1.2.2"
+-- require LeanCopilot from git
+--   "https://github.com/lean-dojo/LeanCopilot" @ "v1.2.2"
 
 require loogle from git
   "https://github.com/nomeata/loogle"
