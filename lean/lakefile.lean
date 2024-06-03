@@ -24,6 +24,10 @@ require auto from git
 require Duper from git
   "https://github.com/leanprover-community/duper" @ "v0.0.12"
 
+require egg from git
+  "https://github.com/marcusrossel/lean-egg"
+    @ "5715f55d754b32f57fa32bf3187ca270caccebb3"
+
 require LeanCopilot from git
   "https://github.com/lean-dojo/LeanCopilot" @ "v1.2.2"
 

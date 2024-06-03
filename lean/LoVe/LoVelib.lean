@@ -4,6 +4,8 @@ Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 import Aesop
 import Auto.Tactic
 import Duper
+import Egg
+
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Finset.Basic
