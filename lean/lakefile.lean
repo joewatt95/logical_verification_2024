@@ -3,10 +3,10 @@ import Lake
 open Lake DSL
 
 package love where
-  moreLinkArgs := #[
-    "-L./.lake/packages/LeanCopilot/.lake/build/lib"
-    -- "-lctranslate2"
-  ]
+  -- moreLinkArgs := #[
+  --   "-L./.lake/packages/LeanCopilot/.lake/build/lib",
+  --   "-lctranslate2"
+  -- ]
 
 @[default_target]
 lean_lib LoVe where
