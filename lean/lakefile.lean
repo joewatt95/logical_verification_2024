@@ -19,11 +19,11 @@ require mathlib from git
 
 require Duper from git
   "https://github.com/leanprover-community/duper"
-    @ "v0.0.13"
+    @ "8077ac787b604ff16a854931058ec4c788932c6f"
 
 require egg from git
   "https://github.com/marcusrossel/lean-egg"
-    @ "ed699643e837ededeb75d88746b69a41c6890432"
+    @ "abaab85d51d33ef01ed8c757bfb49cc55abae229"
 
 -- require LeanCopilot from git
 --   "https://github.com/lean-dojo/LeanCopilot" @ "v1.2.2"
