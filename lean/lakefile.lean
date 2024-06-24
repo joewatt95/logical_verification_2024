@@ -1,12 +1,13 @@
 import Lake
 open Lake DSL
 
-private def libcpp : String :=
-  if System.Platform.isWindows then "libstdc++-6.dll"
-  else if System.Platform.isOSX then "libc++.dylib"
-  else "libstdc++.so.6"
-
-private def args : Array String := #[s!"--load-dynlib={libcpp}"]
+private def args : Array String :=
+  #[s!"--load-dynlib={libcpp}"]
+  where
+    libcpp :=
+      if System.Platform.isWindows then "libstdc++-6.dll"
+      else if System.Platform.isOSX then "libc++.dylib"
+      else "libstdc++.so.6"
 
 package love where
   moreLeanArgs := args
