@@ -9,7 +9,6 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
-import Aesop
 import Auto
 import Duper
 import Egg
