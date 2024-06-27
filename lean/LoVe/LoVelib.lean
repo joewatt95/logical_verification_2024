@@ -1,17 +1,20 @@
 /- Copyright © 2018–2024 Anne Baanen, Alexander Bentkamp, Jasmin Blanchette,
 Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
-import Aesop
-import Auto.Tactic
-import Duper
-import Egg
-import Smt
-
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Finset.Basic
+
+import Mathlib.Tactic.Common
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
+
+import Aesop
+import Auto
+import Duper
+import Egg
+import Smt
+import Smt.Real
 
 -- Import this last so that #find from loogle shadows that of mathlib.
 import Loogle.Find
