@@ -28,7 +28,7 @@ require mathlib from git
 
 require Duper from git
   "https://github.com/leanprover-community/duper"
-    @ "435c35cf8177235d6b6841929efc2249267799d2"
+    @ "v0.0.14"
 
 require smt from git
   "https://github.com/ufmg-smite/lean-smt"
@@ -43,4 +43,4 @@ require egg from git
 
 require loogle from git
   "https://github.com/nomeata/loogle"
-    @ "7a57c3ebb7069f659fee729aec54b39896c1f5da"
+    @ "cd8680514b046e71b79183bf3c64de3350cd0c10"
