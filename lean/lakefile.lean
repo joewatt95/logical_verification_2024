@@ -1,17 +1,19 @@
 import Lake
 open Lake DSL
 
-private def args : Array String :=
-  #[s!"--load-dynlib={libcpp}"]
-  where
-    libcpp :=
-      if System.Platform.isWindows then "libstdc++-6.dll"
-      else if System.Platform.isOSX then "libc++.dylib"
-      else "libstdc++.so.6"
+-- This is needed because we compile and link against the C++ API of cvc5.
+-- private def args : Array String :=
+--   #[s!"--load-dynlib={libcpp}"]
+--   where
+--     libcpp :=
+--       if System.Platform.isWindows then "libstdc++-6.dll"
+--       else if System.Platform.isOSX then "libc++.dylib"
+--       else "libstdc++.so.6"
 
 package love where
-  moreLeanArgs := args
-  moreGlobalServerArgs := args
+  -- moreLeanArgs := args
+  -- moreGlobalServerArgs := args
+
   -- moreLinkArgs := #[
   --   "-L./.lake/packages/LeanCopilot/.lake/build/lib",
   --   "-lctranslate2"
