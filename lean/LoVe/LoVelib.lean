@@ -12,7 +12,7 @@ import Mathlib.Tactic.Ring
 import Auto
 import Duper
 import Egg
-import Smt
+-- import Smt
 -- import Smt.Real
 
 -- Import this last so that #find from loogle shadows that of mathlib.
