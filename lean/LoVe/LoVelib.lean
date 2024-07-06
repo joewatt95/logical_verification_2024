@@ -21,6 +21,18 @@ import Loogle.Find
 
 /- # LoVelib: Logical Verification Library -/
 
+set_option autoImplicit false
+set_option tactic.hygienic false
+
+open Lean
+open Lean.Parser
+open Lean.Parser.Term
+open Lean.Meta
+open Lean.Elab.Tactic
+open Lean.TSyntax
+
+namespace LoVe
+
 macro "setup_auto" : command => `(
   set_option auto.smt true
   set_option auto.smt.trust true
@@ -34,18 +46,32 @@ macro "setup_auto" : command => `(
   set_option auto.tptp.zeport.path "/home/joe/dev/zipperposition/portfolio"
 )
 
-set_option autoImplicit false
-set_option tactic.hygienic false
+syntax "setup_trivial" manyIndent(tactic) : command
 
-open Lean
-open Lean.Parser
-open Lean.Parser.Term
-open Lean.Meta
-open Lean.Elab.Tactic
-open Lean.TSyntax
+macro_rules
+  | `(setup_trivial $[$tacs:tactic]*) => do
+    let mut cmds : Array <| TSyntax `command := #[]
 
-namespace LoVe
+    for opt in [`linter.unreachableTactic, `linter.unusedTactic] do
+      let cmd ← opt
+        |> mkIdent
+        |> λ id ↦ `(set_option $id false)
+      cmds := cmds.push cmd
 
+    for tac in tacs do
+      cmds := cmds.push <|
+        ← `(macro_rules | `(tactic| trivial) => `(tactic| $tac))
+
+    return mkNullNode cmds
+
+    -- let cmd : TSyntax `command := { raw := mkNullNode cmds }
+    -- `(command| $cmd)
+
+setup_trivial
+  decide
+  tauto
+  aesop
+  omega linarith
 
 /- ## Structured Proofs -/
 
