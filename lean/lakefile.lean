@@ -46,4 +46,4 @@ require egg from git
 
 require loogle from git
   "https://github.com/nomeata/loogle"
-    @ "36c07149f33f122a5498369409eafe8c8e7f514b"
+    @ "e0447ffabecf5ff3eff6b2cea6a81346abadbec1"
