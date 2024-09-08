@@ -30,7 +30,7 @@ require mathlib from git
 
 require Duper from git
   "https://github.com/leanprover-community/duper"
-    @ "f4c5e9b93b08a7a1097e04c798645146727fffcf"
+    @ "b14344189f1690bc651853b1b00d1e7b178e13d7"
 
 require smt from git
   "https://github.com/ufmg-smite/lean-smt"
