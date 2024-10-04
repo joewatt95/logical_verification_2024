@@ -24,26 +24,20 @@ lean_lib LoVe where
   roots := #[`LoVe]
   globs := #[Glob.submodules `LoVe]
 
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4"
-    @ "v4.9.1"
+require "leanprover-community" / "mathlib"
+  @ "git#v4.11.0"
 
-require Duper from git
-  "https://github.com/leanprover-community/duper"
-    @ "7bf250a5056a0a58937287046d06dcc2d8e1c94a"
+require "leanprover-community" / "Duper"
+  @ "git#v0.0.16"
 
-require smt from git
-  "https://github.com/ufmg-smite/lean-smt"
-    @ "b332ae49450b88c5ead40d66e4d786cb5d991ea9"
+require "ufmg-smite" / "smt"
+  @ "git#0b418049bf228d55c782223ce6fa53148b77cc79"
 
-require egg from git
-  "https://github.com/marcusrossel/lean-egg"
-    @ "abaab85d51d33ef01ed8c757bfb49cc55abae229"
+require "marcusrossel" / "egg"
+  @ "git#c51f43f79a4ed5dacadc7ae2500828b6534bfab3"
 
--- require LeanCopilot from git
---   "https://github.com/lean-dojo/LeanCopilot"
---     @ "v1.4.0"
+-- require "LeanCopilot"
+--   @ "git#v1.4.0"
 
-require loogle from git
-  "https://github.com/nomeata/loogle"
-    @ "f46663afcd4067a606094dda363f67922e6990a4"
+require "nomeata" / "loogle"
+  @ "git#f46663afcd4067a606094dda363f67922e6990a4"
