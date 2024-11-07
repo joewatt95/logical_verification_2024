@@ -139,12 +139,9 @@ three missing implications, exploiting the three theorems we already have. -/
 
 theorem tfae_classical_axioms :
   List.TFAE [ExcludedMiddle, Peirce, DoubleNegation] := by
-  tfae_have 1 → 2
-  . exact Peirce_of_EM
-  tfae_have 2 → 3
-  . exact DN_of_Peirce
-  tfae_have 3 → 1
-  . exact EM_of_DN
+  tfae_have 1 → 2 := Peirce_of_EM
+  tfae_have 2 → 3 := DN_of_Peirce
+  tfae_have 3 → 1 := EM_of_DN
   tfae_finish
 
 macro "get_tfae_classical_axioms" "(" index₀:term "," index₁:term ")" : term =>
