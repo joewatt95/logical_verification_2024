@@ -49,13 +49,13 @@ structured proof, with `fix`, `assume`, and `show`. -/
 
 theorem about_Impl_struct {a b} :
   ¬ a ∨ b → a → b :=
-    assume h_not_a_or_b : ¬ a ∨ b;
-    assume h_a : a;
-      match h_not_a_or_b with
-      | .inl h_not_a =>
-        have : ⊥ := h_not_a h_a
-        show b from this.elim
-      | .inr h_b => show b from h_b
+  assume h_not_a_or_b : ¬ a ∨ b;
+  assume h_a : a;
+    match h_not_a_or_b with
+    | .inl h_not_a =>
+      have : ⊥ := h_not_a h_a
+      show b from this.elim
+    | .inr h_b => show b from h_b
 
 /- ## Question 2 (6 points): Connectives and Quantifiers
 
