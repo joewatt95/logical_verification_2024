@@ -32,6 +32,7 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 open Lean.Meta
+open Lean.Elab
 open Lean.Elab.Tactic
 open Lean.TSyntax
 
@@ -428,7 +429,15 @@ theorem update_swap (name₁ name₂ : String) (val₁ val₂ : ℕ) (s : State)
     apply funext
     simp [State.update]
 
-open private preprocessPropToDecide in Lean.Elab.Tactic.evalDecide
+private def preprocessPropToDecide (expectedType : Expr) : TermElabM Expr := do
+  let mut expectedType ← instantiateMVars expectedType
+  if expectedType.hasFVar then
+    expectedType ← zetaReduce expectedType
+  if expectedType.hasFVar || expectedType.hasMVar then
+    throwError "expected type must not contain free or meta variables{indentExpr expectedType}"
+  return expectedType
+
+-- open private preprocessPropToDecide in Lean.Elab.Tactic.evalDecide
 
 /--
 Attempt to decide the proposition `prop`. If `prop` is decidable, return a proof
