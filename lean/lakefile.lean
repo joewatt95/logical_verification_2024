@@ -40,4 +40,4 @@ require "leanprover" / verso @
   git "v4.14.0"
 
 require "leanprover-community" / mathlib @
-  git "v4.14.0"
+  git "v4.14.0-patch1"
