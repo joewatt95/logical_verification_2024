@@ -25,7 +25,7 @@ lean_lib LoVe where
   globs := #[Glob.submodules `LoVe]
 
 require "ufmg-smite" / smt @
-  git "7f3956d593f9d6e13e31bd7d449277665871042d"
+  git "4cdea120ba132ba0cb817e7fd516a967f1148752"
 
 require "leanprover-community" / Duper @
   git "v0.0.22"
