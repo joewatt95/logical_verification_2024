@@ -16,7 +16,7 @@ import Duper
 import Egg
 import Smt
 import Smt.Auto
-import Smt.Rat
+-- import Smt.Rat
 import Smt.Real
 
 import LeanSearchClient
