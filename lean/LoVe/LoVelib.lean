@@ -14,10 +14,9 @@ import Mathlib.Tactic.Ring
 import Auto.Tactic
 import Duper
 import Egg
-import Smt
-import Smt.Auto
--- import Smt.Rat
-import Smt.Real
+-- import Smt
+-- import Smt.Auto
+-- import Smt.Real
 
 import LeanSearchClient
 -- Import this last so that #find from loogle shadows that of mathlib.
@@ -38,12 +37,12 @@ open Lean.TSyntax
 
 namespace LoVe
 
-open Lean Auto in
-def Auto.duperRaw (lemmas : Array Lemma) (_inhs : Array Lemma) : MetaM Expr := do
-  let lemmas : Array (Expr × Expr × Array Name × Bool) ← lemmas.mapM
-    λ ⟨⟨proof, ty, _⟩, _⟩ ↦ do
-      return (ty, ← Meta.mkAppM ``eq_true #[proof], #[], true)
-  Duper.runDuper lemmas.toList 0
+-- open Lean Auto in
+-- def Auto.duperRaw (lemmas : Array Lemma) (_inhs : Array Lemma) : MetaM Expr := do
+--   let lemmas : Array (Expr × Expr × Array Name × Bool) ← lemmas.mapM
+--     λ ⟨⟨proof, ty, _⟩, _⟩ ↦ do
+--       return (ty, ← Meta.mkAppM ``eq_true #[proof], #[], true)
+--   Duper.runDuper lemmas.toList 0
 
 macro "setup_auto" : command => `(
   set_option auto.smt true

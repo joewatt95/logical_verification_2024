@@ -24,20 +24,23 @@ lean_lib LoVe where
   roots := #[`LoVe]
   globs := #[Glob.submodules `LoVe]
 
-require "ufmg-smite" / smt @
-  git "1df3f342c196f3f9db3ab2a8204995f8ff9754a5"
+-- require "ufmg-smite" / smt @
+--   git "1df3f342c196f3f9db3ab2a8204995f8ff9754a5"
 
 require "leanprover-community" / Duper @
-  git "v0.0.23"
+  git "v0.0.25"
 
 require "marcusrossel" / egg @
   git "6b3f40f82666b1ec6b2ea2868e8948353a075143"
 
+require "nomeata" / calcify @
+  git "b89b823f26eb35a1d9ed57af2663128d6b3a35c2"
+
 require "nomeata" / loogle @
-  git "d56dbe9a1637c1160862deb9da8d621682e46013"
+  git "b340a5b73a68fd54d624ac1f9c025c11f638bb53"
 
 require "leanprover" / verso @
-  git "v4.16.0"
+  git "v4.18.0"
 
 require "leanprover-community" / mathlib @
-  git "v4.16.0"
+  git "v4.18.0"
