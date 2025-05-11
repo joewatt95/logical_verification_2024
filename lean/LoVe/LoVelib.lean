@@ -14,9 +14,9 @@ import Mathlib.Tactic.Ring
 import Auto.Tactic
 import Duper
 import Egg
--- import Smt
--- import Smt.Auto
--- import Smt.Real
+import Smt
+import Smt.Auto
+import Smt.Real
 
 import LeanSearchClient
 -- Import this last so that #find from loogle shadows that of mathlib.
