@@ -37,13 +37,13 @@ require "JOSHCLUNE" / Hammer @
   git "v4.21.0"
 
 require "marcusrossel" / egg @
-  git "06a9373cd5a8cb1c20bbd4b8bf41d416b956b6cd"
+  git "5d6c4fedf513668335c0e29c57114f9b1e4dbdaa"
 
 require "nomeata" / calcify @
   git "b89b823f26eb35a1d9ed57af2663128d6b3a35c2"
 
 require "nomeata" / loogle @
-  git "2c2d6a298b46081fb751f971677e702d460160d4"
+  git "ff045300e699fe9e890d098b302985eb9b191410"
 
 require "leanprover" / verso @
   git "v4.21.0"
