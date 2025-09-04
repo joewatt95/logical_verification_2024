@@ -16,9 +16,9 @@ import Duper
 import Canonical
 import Egg
 import Hammer
-import Smt
-import Smt.Auto
-import Smt.Real
+-- import Smt
+-- import Smt.Auto
+-- import Smt.Real
 
 import LeanSearchClient
 -- Import this last so that #find from loogle shadows that of mathlib.
@@ -207,7 +207,7 @@ instance Set.PartialOrder {α : Type} : PartialOrder (Set α) where
     by
       intro A B C hAB hBC a ha
       aesop
-  lt_iff_le_not_le :=
+  lt_iff_le_not_ge :=
     by
       intro A B
       apply Iff.intro
