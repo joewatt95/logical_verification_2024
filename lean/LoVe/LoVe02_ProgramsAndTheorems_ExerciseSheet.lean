@@ -132,7 +132,7 @@ macro_rules
 attribute [simp] eval simplify in
 theorem simplify_correct {Γ val} :
   ∀ {expr}, Γ ⊢ expr ⇓ val ↔ Γ ⊢ simplify expr ⇓ val
-  | .num _ | .var _ => by simp only [eval]
+  | .num _ | .var _ => by simp only [eval, simplify]
 
   | .add e₁ e₂ | .sub e₁ e₂ | .mul e₁ e₂ | .div e₁ e₂ =>
     recurse on e₁ then e₂ and finally aesop

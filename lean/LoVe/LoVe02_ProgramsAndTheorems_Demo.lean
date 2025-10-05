@@ -275,7 +275,7 @@ theorem mul_comm :
 theorem mul_add {l m} :
   ∀ {n}, mul l (add m n) = add (mul l m) (mul l n)
   | 0 => rfl
-  | .succ _ => by simp only [mul, mul_add, add_add]
+  | .succ _ => by simp only [add, Nat.succ_eq_add_one, mul, mul_add, add_add]
 
 @[simp]
 theorem mul_assoc {l m} :
@@ -295,8 +295,7 @@ theorem mul_assoc {l m} :
 theorem reverse_append {α} {ys : List α} :
   ∀ {xs : List α}, reverse (xs ++ ys) = reverse ys ++ reverse xs
   | [] => by aesop
-  | x :: xs =>
-  by simp only [reverse, List.append_eq, reverse_append, List.append_assoc]
+  | x :: xs => by simp only [List.cons_append, reverse, reverse_append, List.append_assoc]
 
 @[simp]
 theorem reverse_reverse {α : Type} :

@@ -322,8 +322,7 @@ theorem mul_add (l m n : ℕ) :
   induction n with
   | zero       => rfl
   | succ n' ih =>
-    simp only [mul, ih, SorryTheorems.add_add]
-    -- ac_rfl
+    simp only [add, Nat.succ_eq_add_one, mul, ih, SorryTheorems.add_add]
 
 /- ## Cleanup Tactics
 

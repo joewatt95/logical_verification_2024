@@ -134,22 +134,19 @@ theorem drop_drop {α} :
   ∀ {m n} {xs : List α}, drop n (drop m xs) = drop (n + m) xs
   | 0, _, _ => by simp only [drop, add_zero]
   | _, _, [] => by simp only [drop_nil]
-  | _ + 1, _, _ :: _ => by simp only [drop, Nat.add_eq, add_zero, drop_drop]
+  | _ + 1, _, _ :: _ => by simp only [drop, Nat.add_eq, drop_drop]
 
 theorem take_take {α} :
   ∀ {m} {xs : List α}, take m (take m xs) = take m xs
   | _ , [] => by simp only [take_nil]
   | 0, _ :: _ => by simp only [take]
-  | _ + 1, _ :: _ => by simp only [take, Nat.add_eq, add_zero, take_take]
+  | _ + 1, _ :: _ => by simp only [take, take_take]
 
 theorem take_drop {α} :
   ∀ {n} {xs : List α}, take n xs ++ drop n xs = xs
   | 0, _ => by simp only [drop, List.append_left_eq_self]; unfold take; aesop
   | _ + 1, [] => by simp only [take_nil, drop_nil, List.append_nil]
-  | _ + 1, _ :: _ =>
-    by simp only [
-      take, Nat.add_eq, add_zero, drop, List.cons_append, take_drop
-    ]
+  | _ + 1, _ :: _ => by simp only [take, drop, List.cons_append, take_drop]
 
 
 /- ## Question 3: A Type of Terms

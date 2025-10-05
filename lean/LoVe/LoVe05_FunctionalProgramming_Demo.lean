@@ -251,8 +251,8 @@ instance Prod.Inhabited {α β : Type}
 
 /- We encountered these type classes in lecture 3: -/
 
-#print IsCommutative
-#print IsAssociative
+-- #print IsCommutative
+-- #print IsAssociative
 
 
 /- ## Lists
@@ -384,7 +384,7 @@ theorem length_zip {α β : Type} (xs : List α) (ys : List β) :
   length (zip xs ys) = min (length xs) (length ys) :=
   by
     induction xs generalizing ys with
-    | nil           => simp [min, length]
+    | nil           => simp [min, length]; rfl
     | cons x xs' ih =>
       cases ys with
       | nil        => rfl

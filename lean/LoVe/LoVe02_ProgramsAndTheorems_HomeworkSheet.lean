@@ -33,7 +33,6 @@ testing it on a few examples. -/
 #eval snoc [1] 2
 -- invoke `#eval` or `#reduce` here
 
-attribute [simp] snoc in
 theorem snoc_eq_append {α : Type} {a : α} :
   ∀ {xs : List α}, snoc xs a = xs ++ [a]
   | [] => by simp only [snoc, List.nil_append]
@@ -62,21 +61,21 @@ def sum : List ℕ → ℕ
 Try to give meaningful names to your theorems. Use `sorry` as the proof. -/
 
 theorem sum_snoc_eq_sum {n} : ∀ {ms}, sum (snoc ms n) = n + sum ms
-  | [] => by simp only [sum, add_zero]
-  | x :: xs => by simp only [sum, sum_snoc_eq_sum]; omega
+  | [] => by simp only [snoc, sum, add_zero]
+  | x :: xs => by simp only [snoc, sum, sum_snoc_eq_sum]; grind
 
 theorem sum_concat_eq_sums :
   ∀ {ms ns}, sum (ms ++ ns) = sum ms + sum ns
   | [], _ => by simp only [List.nil_append, sum, zero_add]
   | _, [] => by simp only [List.append_nil, sum, add_zero]
   | m :: ms, n :: ns =>
-    by simp only [sum, List.append_eq, sum_concat_eq_sums]; omega
+    by simp only [List.cons_append, sum, sum_concat_eq_sums]; grind
 
 theorem sum_reverse_eq_sum : ∀ {ns}, sum (reverse ns) = sum ns
-  | [] => by simp only [sum]
+  | [] => rfl
   | n :: ns =>
     calc sum (reverse <| n :: ns)
      _ = sum ns + sum [n] := by rw [reverse, sum_concat_eq_sums, sum_reverse_eq_sum]
-     _ = sum (n :: ns) := by simp only [sum, add_zero]; omega
+     _ = sum (n :: ns) := by simp only [sum, add_zero]; grind
 
 end LoVe
