@@ -9,25 +9,26 @@ lean_lib LoVe where
   globs := #[Glob.submodules `LoVe]
 
 require "ufmg-smite" / smt @
-  git "d6c048b99c80e93c42e7fb03ba5b14a74b00a836"
+  git "a62ff46dd0a9d2505c74f3160ec67c3e6d5e8adc"
 
 require "chasenorman" / Canonical @
-  git "v4.23.0"
+  git "v4.24.0"
 
 require "JOSHCLUNE" / Hammer @
-  git "v4.23.0"
+  git "v4.24.0"
 
-require "marcusrossel" / egg @
-  git "13abfc8437528eeb0088ef223e778c94b069dac7"
+require "Joewatt95" / egg from git
+  "https://github.com/Joewatt95/lean-egg" @
+  "64fedc4717140ce88635a128f4c9c21cd3ef3701"
 
 require "nomeata" / calcify @
   git "b89b823f26eb35a1d9ed57af2663128d6b3a35c2"
 
 require "nomeata" / loogle @
-  git "15beac7f2a5913571cba016e4b87fed907c54f7d"
+  git "ee8c0388917eb6b594f24e1865d5b83230229252"
 
 require "leanprover" / verso @
-  git "v4.23.0"
+  git "v4.24.0"
 
 require "leanprover-community" / mathlib @
-  git "v4.23.0"
+  git "v4.24.0"
