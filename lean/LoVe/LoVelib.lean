@@ -16,9 +16,8 @@ import Duper
 import Canonical
 import Egg
 import Hammer
--- import Smt
--- import Smt.Auto
--- import Smt.Real
+import Smt
+import Smt.Real
 
 import LeanSearchClient
 -- Import this last so that #find from loogle shadows that of mathlib.
