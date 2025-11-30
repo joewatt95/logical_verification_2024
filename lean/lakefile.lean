@@ -10,7 +10,7 @@ lean_lib LoVe where
 
 require "Joewatt95" / smt from git
   "https://github.com/Joewatt95/lean-smt" @
-  "2fc72ca6feaefde3ca26ca3e3e69509d5c0a932d"
+  "6cb8ff6569dcbaa2c482020709237cf8a6e64fac"
 
 require "chasenorman" / Canonical @ git "v4.25.0"
 
