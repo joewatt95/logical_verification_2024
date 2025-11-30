@@ -10,17 +10,18 @@ lean_lib LoVe where
 
 require "Joewatt95" / smt from git
   "https://github.com/Joewatt95/lean-smt" @
-  "ccb6bde98c6931a7d4e02c1fb13f2afb19909c80"
+  "2fc72ca6feaefde3ca26ca3e3e69509d5c0a932d"
 
-require "chasenorman" / Canonical @
-  git "v4.25.0"
+require "chasenorman" / Canonical @ git "v4.25.0"
 
-require "JOSHCLUNE" / Hammer @
-  git "v4.25.0"
+require "JOSHCLUNE" / Hammer @ git "v4.25.1"
+
+require Duper from
+  git "https://github.com/leanprover-community/duper" @ "v4.25.2"
 
 require "Joewatt95" / egg from git
   "https://github.com/Joewatt95/lean-egg" @
-  "9bb889b31d2029a5729ff06ce80248485c34e493"
+  "1f3caba4d7504adb747215ad981be979410762be"
 
 require "nomeata" / calcify @
   git "b89b823f26eb35a1d9ed57af2663128d6b3a35c2"
@@ -28,8 +29,6 @@ require "nomeata" / calcify @
 require "nomeata" / loogle @
   git "0ac13cd97d030b989151359429f9061c12faf0f6"
 
-require "leanprover" / verso @
-  git "v4.25.1"
+require "leanprover" / verso @ git "v4.25.1"
 
-require "leanprover-community" / mathlib @
-  git "v4.25.1"
+require "leanprover-community" / mathlib @ git "v4.25.2"
