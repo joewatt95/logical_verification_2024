@@ -11,7 +11,7 @@ lean_lib LoVe where
 -- require "ufmg-smite" / smt @ git
 --   "3bc19f2d3caba4c5fbfe213143c79364c3d9c97a"
 
-require "chasenorman" / Canonical @ git "v4.28.0-rc1"
+require "chasenorman" / Canonical @ git "v4.28.0"
 
 require "JOSHCLUNE" / Hammer @ git "v4.28.0"
 
