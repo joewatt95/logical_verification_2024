@@ -15,8 +15,8 @@ import Auto.Tactic
 import Duper
 import Canonical
 import Hammer
-import Smt
-import Smt.Real
+-- import Smt
+-- import Smt.Real
 import SOS
 
 import LeanSearchClient
